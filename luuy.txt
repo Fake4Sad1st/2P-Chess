@@ -1,0 +1,9 @@
+class piece {
+	virtual void move(Chessboard&, int x, int);
+	virtual bool moveable(Chessboard&, int x, int y);
+}
+
+class pawn : public piece {
+	void move() override;
+	bool moveable() override;
+}
