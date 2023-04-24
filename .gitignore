@@ -1,0 +1,10 @@
+Lesson/
+bin/
+obj/
+lib/
+include/
+*.cbp
+*.depend
+*.layout
+luuy.txt
+
