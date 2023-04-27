@@ -9,24 +9,19 @@ const int SCREEN_HEIGHT = 678;
 // EXE name
 const std::string EXE_NAME = "Chess.com";
 
-//class laRenderer{
-//public:
-//    laRenderer();
-//    ~laRenderer();
-//
-//private:
-//};
-
 
 class Game{
-public:
+private:
+    static Game* s_game;
     Game();
     ~Game();
-//    laRenderer* gameRenderer;
-    SDL_Renderer* gameRenderer = NULL;
+public:
+    static Game& instance();
+    static void free();
+    SDL_Renderer* m_Renderer = NULL;
 
 private:
-    SDL_Window* gameWindow = NULL;
+    SDL_Window* m_Window = NULL;
 
 };
 

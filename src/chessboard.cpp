@@ -2,12 +2,10 @@
 #include<SDL_image.h>
 #include <vector>
 
-#include "init.hpp"
-#include "game.hpp"
+#include "chessboard.hpp"
 
-Chessboard::Chessboard(Game& game):
-    chessboard(game.gameRenderer, chessboardLink),
-    m_renderer(game.gameRenderer)
+Chessboard::Chessboard():
+    chessboard(chessboardLink)
 {
 }
 
@@ -28,4 +26,8 @@ void Chessboard::initValue(){
 
 void Chessboard::draw(){
     chessboard.draw(0, 0);
+}
+
+int Chessboard::getValue(int x, int y){
+   return value[x][y];
 }

@@ -5,7 +5,11 @@
 
 #include "texture.hpp"
 
-Texture::Texture(SDL_Renderer* renderer, const std::string& filename)
+Texture::Texture(){
+    texture = NULL;
+}
+
+Texture::Texture(const std::string& filename)
 {
     SDL_Surface* loadedSurface = IMG_Load( filename.c_str() );
     if( loadedSurface == NULL )
@@ -14,7 +18,7 @@ Texture::Texture(SDL_Renderer* renderer, const std::string& filename)
         throw;
 	}
 
-	texture = SDL_CreateTextureFromSurface( renderer, loadedSurface );
+	texture = SDL_CreateTextureFromSurface( Game::instance().m_Renderer, loadedSurface );
     if( texture == NULL )
     {
         printf( "Unable to create texture from %s! SDL Error: %s\n", filename.c_str(), SDL_GetError() );
@@ -22,15 +26,21 @@ Texture::Texture(SDL_Renderer* renderer, const std::string& filename)
     }
     width = loadedSurface->w;
     height = loadedSurface->h;
-    m_renderer = renderer;
     SDL_FreeSurface(loadedSurface);
 }
 
 Texture::~Texture(){
-    SDL_DestroyTexture(texture);
+    freeTexture();
 }
 
 void Texture::draw(int x, int y){
     SDL_Rect rect{x, y, width, height};
-    SDL_RenderCopy(m_renderer, texture, NULL, &rect);
+    SDL_RenderCopy(Game::instance().m_Renderer, texture, NULL, &rect);
+}
+
+void Texture::freeTexture() {
+    if (texture != NULL) {
+        SDL_DestroyTexture(texture);
+        texture = NULL;
+    }
 }
