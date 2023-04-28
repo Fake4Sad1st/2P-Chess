@@ -39,7 +39,7 @@ void Piece::setVal(int _val){
 
 void Piece::eaten(){
     image.freeTexture();
-    x = y = val = -1;
+    side = 0, val = -1;
 }
 
 void Piece::draw(){
@@ -55,3 +55,10 @@ int Piece::gety(){
     return y;
 }
 
+int Piece::getVal(){
+    return NUM_OF_PIECES * side + val;
+}
+
+bool Piece::getSide(){
+    return side;
+}

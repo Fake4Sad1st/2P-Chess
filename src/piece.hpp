@@ -36,6 +36,7 @@ enum CHESS_PIECE{
     ROOK,
     QUEEN,
     KING,
+    NUM_OF_PIECES,
 };
 
 //image links
@@ -61,7 +62,6 @@ public:
     ~Piece();
     void setImage(const std::string& path);
     void setPos(int _x,int _y);
-//    void move();
     void setVal(int _val);
     void eaten();
     void draw();
@@ -69,6 +69,9 @@ public:
 public:
     int getx();
     int gety();
+    int getVal();
+    bool getSide();
+//    void move();
 
 private:
     Texture image;

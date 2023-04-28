@@ -13,8 +13,8 @@ public:
     ~Texture();
 
     Texture& operator=(const Texture&) = delete;
-    Texture& operator=(Texture&& other)
-    {
+    Texture& operator=(Texture&& other){
+        freeTexture();
         texture = other.texture;
         width = other.width;
         height = other.height;

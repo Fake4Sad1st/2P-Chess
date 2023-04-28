@@ -31,3 +31,7 @@ void Chessboard::draw(){
 int Chessboard::getValue(int x, int y){
    return value[x][y];
 }
+
+void Chessboard::setValue(int x, int y, int _val){
+    value[x][y] = _val;
+}
