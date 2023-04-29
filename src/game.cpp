@@ -1,10 +1,3 @@
-#include <iostream>
-#include <string>
-#include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_mixer.h>
-#include <SDL_ttf.h>
-
 #include "game.hpp"
 
 Game* Game::s_game = nullptr;
@@ -68,7 +61,7 @@ Game::~Game(){
 
 	//Quit SDL subsystems
 	IMG_Quit();
-	SDL_Quit();
 	Mix_Quit();
 	TTF_Quit();
+	SDL_Quit();
 }

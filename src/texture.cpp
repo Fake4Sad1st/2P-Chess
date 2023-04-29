@@ -1,8 +1,3 @@
-#include <string>
-#include <iostream>
-#include <SDL.h>
-#include <SDL_image.h>
-
 #include "texture.hpp"
 
 Texture::Texture(){

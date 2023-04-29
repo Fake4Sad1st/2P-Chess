@@ -2,7 +2,6 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
-#include <iostream>
 #include <vector>
 
 #include "texture.hpp"
@@ -15,7 +14,7 @@ const int XOFF = 24;
 const int YOFF = 9;
 
 //Image link
-const string chessboardLink = "img/chessboard.png";
+const std::string chessboardLink = "img/chessboard.png";
 
 class Chessboard{
 public:

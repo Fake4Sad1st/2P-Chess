@@ -1,7 +1,3 @@
-#include <string>
-#include <SDL.h>
-#include <SDL_image.h>
-
 #include "piece.hpp"
 #include "chessboard.hpp"
 
@@ -17,15 +13,6 @@ void Piece::setPos(int _x, int _y){
     y = _y;
 }
 
-//void Piece::move(){
-//    switch(val){
-//        case PAWN:
-//            if(side == BLACK){
-//                assert
-//            }
-//    }
-//}
-
 void Piece::setVal(int _val){
     if(_val == -1){
         image.freeTexture();
@@ -34,6 +21,7 @@ void Piece::setVal(int _val){
     }
     val = _val % 6;
     side = ( _val >= 6 ? 1 : 0 );
+    assert(0 <= val && val < 12);
     Piece::setImage(PieceLink[_val]);
 }
 
@@ -43,7 +31,7 @@ void Piece::eaten(){
 }
 
 void Piece::draw(){
-    if(val == -1) return;
+    if(!isPiece()) return;
     image.draw(XOFF + y * PIECE_SIZE, YOFF + x * PIECE_SIZE);
 }
 
@@ -56,9 +44,21 @@ int Piece::gety(){
 }
 
 int Piece::getVal(){
-    return NUM_OF_PIECES * side + val;
+    if(!isPiece()) return -1;
+    return val;
 }
 
-bool Piece::getSide(){
+int Piece::getSide(){
+    if(!isPiece()) return -1;
     return side;
+}
+
+bool Piece::ally(Piece& other){
+    cerr << "val=" << other.getVal() << '\n';
+    if(other.getVal() == -1) return false;
+    return side == other.getSide();
+}
+
+bool Piece::isPiece(){
+    return val != -1;
 }

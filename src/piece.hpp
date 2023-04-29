@@ -1,9 +1,5 @@
 #pragma once
 
-#include <string>
-#include <SDL.h>
-#include <SDL_image.h>
-
 #include "texture.hpp"
 
 //Piece size
@@ -70,8 +66,9 @@ public:
     int getx();
     int gety();
     int getVal();
-    bool getSide();
-//    void move();
+    int getSide();
+    bool ally(Piece& other);
+    bool isPiece();
 
 private:
     Texture image;
