@@ -5,21 +5,6 @@
 //Piece size
 const int PIECE_SIZE = 80;
 
-enum ChessKind{
-    WHITE_PAWN,
-    WHITE_BISHOP,
-    WHITE_KNIGHT,
-    WHITE_ROOK,
-    WHITE_QUEEN,
-    WHITE_KING,
-    BLACK_PAWN,
-    BLACK_BISHOP,
-    BLACK_KNIGHT,
-    BLACK_ROOK,
-    BLACK_QUEEN,
-    BLACK_KING,
-};
-
 enum SIDE{
     WHITE,
     BLACK,
@@ -60,7 +45,7 @@ public:
     void setPos(int _x,int _y);
     void setVal(int _val);
     void eaten();
-    void draw();
+    void draw(SDL_Rect& rect);
 
 public:
     int getx();
@@ -68,6 +53,7 @@ public:
     int getVal();
     int getSide();
     bool ally(Piece& other);
+    bool enemy(Piece& other);
     bool isPiece();
 
 private:
@@ -77,4 +63,17 @@ private:
     bool side;
 };
 
-
+enum ChessKind{
+    WHITE_PAWN,
+    WHITE_BISHOP,
+    WHITE_KNIGHT,
+    WHITE_ROOK,
+    WHITE_QUEEN,
+    WHITE_KING,
+    BLACK_PAWN,
+    BLACK_BISHOP,
+    BLACK_KNIGHT,
+    BLACK_ROOK,
+    BLACK_QUEEN,
+    BLACK_KING,
+};

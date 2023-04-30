@@ -28,6 +28,14 @@ Texture::~Texture(){
     freeTexture();
 }
 
+void Texture::setAlpha (Uint8 a){
+    SDL_SetTextureAlphaMod(texture, a);
+}
+
+void Texture::draw(SDL_Rect& rect){
+    SDL_RenderCopy(Game::instance().m_Renderer, texture, NULL, &rect);
+}
+
 void Texture::draw(int x, int y){
     SDL_Rect rect{x, y, width, height};
     SDL_RenderCopy(Game::instance().m_Renderer, texture, NULL, &rect);

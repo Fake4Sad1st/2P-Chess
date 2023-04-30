@@ -20,6 +20,8 @@ public:
         return *this;
     }
 
+    void setAlpha(Uint8 a);
+    void draw(SDL_Rect &rect);
     void draw(int x, int y);
     void freeTexture();
 

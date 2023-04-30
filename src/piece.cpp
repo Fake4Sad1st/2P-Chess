@@ -30,9 +30,9 @@ void Piece::eaten(){
     side = 0, val = -1;
 }
 
-void Piece::draw(){
+void Piece::draw(SDL_Rect& rect){
     if(!isPiece()) return;
-    image.draw(XOFF + y * PIECE_SIZE, YOFF + x * PIECE_SIZE);
+    image.draw(rect);
 }
 
 int Piece::getx(){
@@ -54,9 +54,13 @@ int Piece::getSide(){
 }
 
 bool Piece::ally(Piece& other){
-    cerr << "val=" << other.getVal() << '\n';
-    if(other.getVal() == -1) return false;
+    if(!other.isPiece()) return false;
     return side == other.getSide();
+}
+
+bool Piece::enemy(Piece& other){
+    if(!other.isPiece()) return false;
+    return side != other.getSide();
 }
 
 bool Piece::isPiece(){
