@@ -19,9 +19,9 @@ void Piece::setVal(int _val){
         val = -1;
         return;
     }
+    assert(0 <= _val && _val < 12);
     val = _val % 6;
     side = ( _val >= 6 ? 1 : 0 );
-    assert(0 <= val && val < 12);
     Piece::setImage(PieceLink[_val]);
 }
 

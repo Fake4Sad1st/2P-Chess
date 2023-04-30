@@ -60,7 +60,7 @@ private:
     Texture image;
     int x, y;
     int val = -1;
-    bool side;
+    bool side, hasMoved;
 };
 
 enum ChessKind{

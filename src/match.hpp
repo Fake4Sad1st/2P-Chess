@@ -15,6 +15,13 @@
 const int XMOVE[] = {1, 1, -1, -1, 0, 1, 0, -1, 1, 1, 2, 2, -1, -1, -2, -2};
 const int YMOVE[] = {1, -1, 1, -1, 1, 0, -1, 0, 2, -2, 1, -1, 2, -2, 1, -1};
 
+//the cases happen when moving a piece
+enum MOVING_CASE{
+    NOTHING,
+    CASTLING,
+    EN_PASSANT,
+};
+
 //store the move in a match
 class Movement{
 public:
@@ -41,6 +48,15 @@ public:
 public:
     void add_numMove();
     void addColorSquare(pa X);
+    void addBit(Uint64 &x, int b);
+
+//for check
+public:
+    bool isThatCheck(bool sideGotChecked, pa From = make_pair(-1, -1), pa To = make_pair(-1, -1), short speCase=NOTHING);
+    void create_tempBoard(int xFrom, int yFrom, int xTo, int yTo, short speCase);
+    bool check_tempBoard(bool Side);
+private:
+    bool inCheck, suitableMove;
 
 public:
     bool insideBoard(int x, int y){
@@ -57,7 +73,8 @@ private:
     Uint64 movable[8][8];
     deque<Movement> dMove;
     int numMove, numTurn;
-    bool canMoveTo[8][8];
+    int tempBoard[8][8];
+    bool canMoveTo[8][8], reCalculate;
     bool quit, hold_piece;
     bool currentSide;
     pa cur;
