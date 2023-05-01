@@ -1,5 +1,4 @@
 #include "piece.hpp"
-#include "chessboard.hpp"
 
 Piece::Piece(){}
 Piece::~Piece(){}
@@ -7,10 +6,6 @@ Piece::~Piece(){}
 void Piece::setImage(const std::string& path){
     image = Texture(path);
 }
-
-//void Piece::setPos(int _x, int _y){
-//    x = _x, y = _y;
-//}
 
 void Piece::setVal(int _val){
     if(_val == -1){
@@ -34,13 +29,6 @@ void Piece::draw(SDL_Rect& rect){
     image.draw(rect);
 }
 
-//int Piece::getx(){
-//    return x;
-//}
-//
-//int Piece::gety(){
-//    return y;
-//}
 
 int Piece::getVal(){
     if(!isPiece()) return -1;

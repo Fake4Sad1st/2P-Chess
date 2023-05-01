@@ -9,14 +9,22 @@ Chessboard::~Chessboard(){}
 
 void Chessboard::initValue(){
     value = {
-        {9, 8, 7, 10, 11, 7, 8, 9},
-        {6, 6, 6, 6, 6, 6, 6, 6},
+        {BROOK, BKNIGHT, BBISHOP, BQUEEN, BKING, BBISHOP, BKNIGHT, BROOK},
+        {BPAWN, BPAWN, BPAWN, BPAWN, BPAWN, BPAWN, BPAWN, BPAWN},
         {-1, -1, -1, -1, -1, -1, -1, -1},
         {-1, -1, -1, -1, -1, -1, -1, -1},
         {-1, -1, -1, -1, -1, -1, -1, -1},
         {-1, -1, -1, -1, -1, -1, -1, -1},
-        {0, 0, 0, 0, 0, 0, 0, 0},
-        {3, 2, 1, 4, 5, 1, 2, 3}
+        {WPAWN, WPAWN, WPAWN, WPAWN, WPAWN, WPAWN, WPAWN, WPAWN},
+        {WROOK, WKNIGHT, WBISHOP, WQUEEN, WKING, WBISHOP, WKNIGHT, WROOK}
+//        {-1, -1, -1, -1, -1, -1, -1, BKING},
+//        {-1, -1, -1, -1, -1, BBISHOP, -1, -1},
+//        {-1, -1, -1, -1, -1, -1, -1, -1},
+//        {-1, BPAWN, WPAWN, -1, -1, -1, WROOK, -1},
+//        {-1, -1, -1, -1, -1, -1, -1, -1},
+//        {-1, -1, -1, -1, -1, -1, -1, -1},
+//        {BKNIGHT, -1, -1, WKING, -1, -1, -1, -1},
+//        {-1, -1, -1, -1, -1, -1, -1, -1}
     };
 }
 

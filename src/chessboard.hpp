@@ -30,3 +30,19 @@ private:
     vector< vector<int> > value;
 
 };
+
+
+enum ChessKind{
+    WPAWN,
+    WBISHOP,
+    WROOK,
+    WKNIGHT,
+    WQUEEN,
+    WKING,
+    BPAWN,
+    BBISHOP,
+    BROOK,
+    BKNIGHT,
+    BQUEEN,
+    BKING,
+};

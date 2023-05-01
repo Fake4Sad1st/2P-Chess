@@ -26,9 +26,10 @@ enum MOVING_CASE{
 class Movement{
 public:
     Movement();
-    Movement(pa _from, pa _to, int _pieceKind, bool _pieceTaken);
+    Movement(pa _from, pa _to, int _pieceKind, int _pieceTaken, int _promoteTo, short _speCase = 0);
     pa from, to;
-    int pieceKind, pieceTaken;
+    int pieceKind, pieceTaken, promoteTo;
+    short speCase;
 };
 
 
@@ -44,14 +45,16 @@ public:
     void calculate();
 
 public:
-    void saveMove(pa from, pa to);
+    void drawPromotion();
+    void saveMove(pa from, pa to, int promoteTo = -1);
     void add_numMove();
-    void addColorSquare(pa X);
+    void addColorSquare(Uint32 val, pa X);
     void addBit(Uint64 &x, int b);
 
 //for check
 public:
     bool isThatCheck(bool sideGotChecked, pa From = make_pair(-1, -1), pa To = make_pair(-1, -1), short speCase=NOTHING);
+    void create_promotionBoard(int col);
     void create_tempBoard(int xFrom, int yFrom, int xTo, int yTo, short speCase);
     bool check_tempBoard(bool Side);
 private:
@@ -72,6 +75,7 @@ private:
     Uint64 movable[8][8];
     deque<Movement> dMove;
     int numMove, numTurn;
+    int promote;
     int tempBoard[8][8];
     bool canMoveTo[8][8], reCalculate;
     bool hasMoved[8][8];

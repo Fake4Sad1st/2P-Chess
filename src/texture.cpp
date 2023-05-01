@@ -38,7 +38,7 @@ void Texture::draw(SDL_Rect& rect){
 
 void Texture::draw(int x, int y){
     SDL_Rect rect{x, y, width, height};
-    SDL_RenderCopy(Game::instance().m_Renderer, texture, NULL, &rect);
+    draw(rect);
 }
 
 void Texture::freeTexture() {
