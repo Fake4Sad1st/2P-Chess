@@ -30,8 +30,8 @@ void Match::init(){
     cur = make_pair(0, 0);
     board.initValue();
     FU(i, 0, 8) FU(j, 0, 8){
-        piece[i][j].setPos(i, j);
-        movable[i][j] = 0;
+//        piece[i][j].setPos(i, j);
+        movable[i][j] = hasMoved[i][j] = 0;
     }
     dMove.clear();
 
@@ -63,11 +63,7 @@ void Match::move(){
                         cerr << "CANCELLED!\n";
                         continue;
                     }
-
-                    dMove.push_back(Movement(cur, make_pair(x_board, y_board),
-                                            piece[cur.fi][cur.se].getVal(), piece[x_board][y_board].getVal()));
-                    board.setValue(x_board, y_board, board.getValue(cur.fi, cur.se));
-                    board.setValue(cur.fi, cur.se, -1);
+                    saveMove(cur, make_pair(x_board, y_board));
 
                     add_numMove();
                 }
@@ -86,6 +82,10 @@ void Match::move(){
                 reCalculate = true;
             }
         }
+        //reset field
+        if( e.type == SDL_KEYDOWN ){
+            if( e.key.keysym.sym == SDLK_r ){init(); return;}
+        }
     }
 }
 
@@ -103,7 +103,6 @@ void Match::calculate(){
         if(piece[i][j].getSide() != currentSide) continue;
         switch(piece[i][j].getVal()){
             case PAWN:
-                ///Todo: en passant, promotion;
                 {
                     int dir, startRow;
                     if(currentSide == WHITE) dir = -1, startRow = 6;
@@ -122,6 +121,15 @@ void Match::calculate(){
                     if(insideBoard(i + dir, j + 1) && piece[i][j].enemy(piece[i + dir][j + 1])
                        && !isThatCheck(currentSide, make_pair(i, j), make_pair(i+dir, j+1)))
                         addBit(movable[i][j], realPos(i + dir, j + 1));
+
+                    //en passant
+                    if(i == startRow + 3*dir){
+                        if(dMove.back().pieceKind != PAWN) break;
+                        pa From = dMove.back().from, To = dMove.back().to;
+                        if(abs(From.fi - To.fi) != 2 || abs(j - To.se) != 1) break;
+                        if(!isThatCheck(currentSide, make_pair(i, j), make_pair(i+dir, To.se), EN_PASSANT))
+                            addBit(movable[i][j], realPos(i + dir, To.se));
+                    }
                 }
                 break;
             case KNIGHT:
@@ -169,12 +177,31 @@ void Match::calculate(){
                 }
                 break;
             case KING:
-                ///Todo: castling
-                FU(k, 0, 8){
-                    int x = i + XMOVE[k], y = j + YMOVE[k];
-                    if(insideBoard(x, y) && !piece[i][j].ally(piece[x][y])
-                       && !isThatCheck(currentSide, make_pair(i, j), make_pair(x, y)))
-                        addBit(movable[i][j], realPos(x, y));
+                {
+                    bool ok[8];
+                    FU(k, 0, 8){
+                        int x = i + XMOVE[k], y = j + YMOVE[k];
+                        ok[k] = 1;
+                        if(!insideBoard(x, y) || piece[i][j].ally(piece[x][y])) continue;
+                        ok[k] = isThatCheck(currentSide, make_pair(i, j), make_pair(x, y));
+                        if(!ok[k]) addBit(movable[i][j], realPos(x, y));
+                    }
+
+                    //castling
+                    if(!inCheck && hasMoved[i][j] == false){
+                        assert(j == 4);
+                        if(!ok[4]){//not be attacked when moving close
+
+                            if(hasMoved[i][7] == false && !piece[i][5].isPiece() && !piece[i][6].isPiece()
+                               && !isThatCheck(currentSide, make_pair(i, 4), make_pair(i, 6), CASTLING))
+                                addBit(movable[i][4], realPos(i, 6));
+                        }
+                        if(!ok[6]){//not be attacked when moving far
+                            if(hasMoved[i][0] == false && !piece[i][1].isPiece() && !piece[i][2].isPiece() && !piece[i][3].isPiece()
+                               && !isThatCheck(currentSide, make_pair(i, 4), make_pair(i, 2), CASTLING))
+                                addBit(movable[i][4], realPos(i, 2));
+                        }
+                    }
                 }
                 break;
             default:{cerr << "Error: No piece detected\n"; throw;}
@@ -230,6 +257,35 @@ void Match::draw(){
     SDL_Delay(20);
 
     if(reCalculate) calculate(), reCalculate = false;
+}
+
+//save the move you made to the board
+void Match::saveMove(pa from, pa to){
+    int xFrom = from.fi, yFrom = from.se;
+    int xTo = to.fi, yTo = to.se;
+
+    hasMoved[xFrom][yFrom] = hasMoved[xTo][yTo] = true;
+    dMove.push_back(Movement(from, to,
+                            piece[xFrom][yFrom].getVal(), piece[xTo][yTo].getVal()));
+    hasMoved[xFrom][yFrom] = hasMoved[xTo][yTo] = true;
+    board.setValue(xTo, yTo, board.getValue(xFrom, yFrom));
+    board.setValue(xFrom, yFrom, -1);
+    ///Todo: Pawn promotion;
+    if(piece[xFrom][yFrom].getVal() == PAWN && abs(xTo - xFrom) == 1 && abs(yTo - yFrom) == 1
+       && !piece[xTo][yTo].isPiece()){ //En passant detected
+        board.setValue(xFrom, yTo, -1);
+    }
+    else if(piece[xFrom][yFrom].getVal() == KING && abs(yTo - yFrom) == 2){ //Castling detected
+        bool Side = piece[xFrom][yFrom].getSide();
+        if(yTo == 2){//far castling: o-o-o
+            board.setValue(xTo, 3, NUM_OF_PIECES * Side + ROOK);
+            board.setValue(xTo, 0, -1);
+        }
+        else{//close castling: o-o
+            board.setValue(xTo, 5, NUM_OF_PIECES * Side + ROOK);
+            board.setValue(xTo, 7, -1);
+        }
+    }
 }
 
 //go to a new move

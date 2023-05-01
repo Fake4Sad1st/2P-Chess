@@ -42,14 +42,14 @@ public:
     Piece();
     ~Piece();
     void setImage(const std::string& path);
-    void setPos(int _x,int _y);
+//    void setPos(int _x,int _y);
     void setVal(int _val);
     void eaten();
     void draw(SDL_Rect& rect);
 
 public:
-    int getx();
-    int gety();
+//    int getx();
+//    int gety();
     int getVal();
     int getSide();
     bool ally(Piece& other);
@@ -58,9 +58,9 @@ public:
 
 private:
     Texture image;
-    int x, y;
+//    int x, y;
     int val = -1;
-    bool side, hasMoved;
+    bool side;
 };
 
 enum ChessKind{

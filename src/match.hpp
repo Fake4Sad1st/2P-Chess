@@ -28,8 +28,6 @@ public:
     Movement();
     Movement(pa _from, pa _to, int _pieceKind, bool _pieceTaken);
     pa from, to;
-
-private:
     int pieceKind, pieceTaken;
 };
 
@@ -46,6 +44,7 @@ public:
     void calculate();
 
 public:
+    void saveMove(pa from, pa to);
     void add_numMove();
     void addColorSquare(pa X);
     void addBit(Uint64 &x, int b);
@@ -68,13 +67,14 @@ public:
 
 private:
     Chessboard board;
-    SDL_Rect square[8][8];
     Piece piece[8][8];
+    SDL_Rect square[8][8];
     Uint64 movable[8][8];
     deque<Movement> dMove;
     int numMove, numTurn;
     int tempBoard[8][8];
     bool canMoveTo[8][8], reCalculate;
+    bool hasMoved[8][8];
     bool quit, hold_piece;
     bool currentSide;
     pa cur;
