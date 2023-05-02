@@ -15,11 +15,15 @@
 const int XMOVE[] = {1, 1, -1, -1, 0, 1, 0, -1, 1, 1, 2, 2, -1, -1, -2, -2};
 const int YMOVE[] = {1, -1, 1, -1, 1, 0, -1, 0, 2, -2, 1, -1, 2, -2, 1, -1};
 
+const Uint32 COLOR_MOVED = 0xF6F6699F;
+const Uint32 COLOR_PROMOTE = 0xFFFFFFFF;
+
 //the cases happen when moving a piece
 enum MOVING_CASE{
     NOTHING,
     CASTLING,
     EN_PASSANT,
+    PROMOTING,
 };
 
 //store the move in a match
@@ -32,6 +36,25 @@ public:
     short speCase;
 };
 
+//about class Change
+const int NUM_FRAME = 16;
+enum ANIMATION_CASE{
+    MOVED,
+    EATEN,
+};
+
+//store the change of pieces in a step
+class Change{
+public:
+    Change();
+    Change(pa _from, pa _to, int _pieceIn); //MOVED
+    Change(pa pos, int _pieceIn); //EATEN
+
+public:
+    short Case;
+    pa from, to;
+    int pieceIn;
+};
 
 //store the match details
 class Match{
@@ -69,9 +92,9 @@ public:
     }
 
 private:
+    SDL_Rect square[8][8];
     Chessboard board;
     Piece piece[8][8];
-    SDL_Rect square[8][8];
     Uint64 movable[8][8];
     deque<Movement> dMove;
     int numMove, numTurn;
@@ -83,4 +106,9 @@ private:
     bool currentSide;
     pa cur;
     Texture dot1, dot2;
+
+//For the animation
+public:
+    void drawAnimation(const Movement& X);
+    void drawAnimationStep(int step, const vector<Change>& ani);
 };

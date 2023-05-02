@@ -11,7 +11,7 @@
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 672;
-const int SCREEN_HEIGHT = 678;
+const int SCREEN_HEIGHT = 675;
 
 // EXE name
 const std::string EXE_NAME = "2 Player Chess";
