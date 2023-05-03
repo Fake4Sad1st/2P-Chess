@@ -13,7 +13,7 @@ Texture::Texture(const std::string& filename)
         throw;
 	}
 
-	texture = SDL_CreateTextureFromSurface( Game::instance().m_Renderer, loadedSurface );
+	texture = SDL_CreateTextureFromSurface( Basic::instance().m_renderer, loadedSurface );
     if( texture == NULL )
     {
         printf( "Unable to create texture from %s! SDL Error: %s\n", filename.c_str(), SDL_GetError() );
@@ -33,7 +33,7 @@ void Texture::setAlpha (Uint8 a){
 }
 
 void Texture::draw(SDL_Rect& rect){
-    SDL_RenderCopy(Game::instance().m_Renderer, texture, NULL, &rect);
+    SDL_RenderCopy(Basic::instance().m_renderer, texture, NULL, &rect);
 }
 
 void Texture::draw(int x, int y){

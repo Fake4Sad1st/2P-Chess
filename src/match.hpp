@@ -15,6 +15,7 @@
 const int XMOVE[] = {1, 1, -1, -1, 0, 1, 0, -1, 1, 1, 2, 2, -1, -1, -2, -2};
 const int YMOVE[] = {1, -1, 1, -1, 1, 0, -1, 0, 2, -2, 1, -1, 2, -2, 1, -1};
 
+//color
 const Uint32 COLOR_MOVED = 0xF6F6699F;
 const Uint32 COLOR_PROMOTE = 0xFFFFFFFF;
 

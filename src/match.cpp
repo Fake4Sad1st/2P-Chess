@@ -29,7 +29,6 @@ Match::Match(){
     FU(i, 0, 8) FU(j, 0, 8)
         square[i][j] = SDL_Rect{XOFF + j * PIECE_SIZE , YOFF + i * PIECE_SIZE,
                                 PIECE_SIZE, PIECE_SIZE};
-    init();
 }
 
 Match::~Match(){}
@@ -49,10 +48,11 @@ void Match::init(){
 }
 
 void Match::mainEvent(){
+    init();
     while(!quit){
         draw();
         move();
-        if(quit) break;
+        if(Basic::instance().askQuit()) return;
     }
 }
 
@@ -60,10 +60,11 @@ void Match::mainEvent(){
 void Match::move(){
     SDL_Event e;
     while( SDL_PollEvent( &e ) != 0 ) {
-        if( e.type == SDL_QUIT ){ quit = true; return;}
-        if( e.type == SDL_KEYDOWN ){ //reset field
-            if( e.key.keysym.sym == SDLK_r ){init(); return;}
-            if( e.key.keysym.sym == SDLK_ESCAPE ) promote = -1, hold_piece = false;
+        if( e.type == SDL_QUIT ){ Basic::instance().rageQuit(); return;}
+        if( e.type == SDL_KEYDOWN ){
+            if( e.key.keysym.sym == SDLK_q ){quit = true; return;}
+            if( e.key.keysym.sym == SDLK_r ){init(); return;} //reset field
+            if( e.key.keysym.sym == SDLK_ESCAPE ) promote = -1, hold_piece = false; //cancel move
         }
         if( e.type == SDL_MOUSEBUTTONDOWN ) {
             int y_board = (e.motion.x < XOFF ? -1 : (e.motion.x - XOFF) / 80);
@@ -84,7 +85,9 @@ void Match::move(){
                     }
                     hold_piece = false;
                     if(!canMoveTo[x_board][y_board]){
-                        cerr << "CANCELLED!\n";
+                        if(cur != make_pair(x_board, y_board) && piece[cur.fi][cur.se].ally(piece[x_board][y_board]))
+                            cur = make_pair(x_board, y_board), hold_piece = true;
+                        else cerr << "CANCELLED!\n";
                         continue;
                     }
                     if(piece[cur.fi][cur.se].getVal() == PAWN && (x_board == 0 || x_board == 7)){
@@ -237,7 +240,7 @@ void Match::calculate(){
 //draw the board after each move
 void Match::draw(){
     //Clear screen
-    SDL_RenderClear( Game::instance().m_Renderer );
+    SDL_RenderClear( Basic::instance().m_renderer );
 
     //Render texture to screen
     board.draw();
@@ -277,7 +280,7 @@ void Match::draw(){
         if(promote == -1 || tempBoard[i][j] == -1) piece[i][j].draw(square[i][j]);
 
     //Update screen
-    SDL_RenderPresent( Game::instance().m_Renderer );
+    SDL_RenderPresent( Basic::instance().m_renderer );
     SDL_Delay(20);
 
     if(reCalculate) calculate(), reCalculate = false;
@@ -357,12 +360,12 @@ void Match::add_numMove(){
 
 //add color to a specific square
 void Match::addColorSquare(Uint32 val, pa X){
-    if(val == COLOR_MOVED) SDL_SetRenderDrawBlendMode(Game::instance().m_Renderer, SDL_BLENDMODE_BLEND);
-    else SDL_SetRenderDrawBlendMode(Game::instance().m_Renderer, SDL_BLENDMODE_NONE);
+    if(val == COLOR_MOVED) SDL_SetRenderDrawBlendMode(Basic::instance().m_renderer, SDL_BLENDMODE_BLEND);
+    else SDL_SetRenderDrawBlendMode(Basic::instance().m_renderer, SDL_BLENDMODE_NONE);
     Uint8 a[4];
     for(int i = 3; i >= 0; i--) a[i] = val & 255, val >>= 8;
-    SDL_SetRenderDrawColor(Game::instance().m_Renderer, a[0], a[1], a[2], a[3]);
-    SDL_RenderFillRect(Game::instance().m_Renderer, &square[X.fi][X.se]);
+    SDL_SetRenderDrawColor(Basic::instance().m_renderer, a[0], a[1], a[2], a[3]);
+    SDL_RenderFillRect(Basic::instance().m_renderer, &square[X.fi][X.se]);
 }
 
 void Match::addBit(Uint64 &x, int b){
@@ -502,7 +505,7 @@ void Match::drawAnimation(const Movement& X){
 
 void Match::drawAnimationStep(int step, const vector<Change>& ani){
     //Clear screen
-    SDL_RenderClear( Game::instance().m_Renderer );
+    SDL_RenderClear( Basic::instance().m_renderer );
 
     //Render texture to screen
     board.draw();
@@ -537,6 +540,6 @@ void Match::drawAnimationStep(int step, const vector<Change>& ani){
     }
 
     //Update screen
-    SDL_RenderPresent( Game::instance().m_Renderer );
+    SDL_RenderPresent( Basic::instance().m_renderer );
     SDL_Delay(8);
 }

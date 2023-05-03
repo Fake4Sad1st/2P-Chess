@@ -1,11 +1,6 @@
 #pragma once
 
-#include <SDL.h>
-#include <SDL_image.h>
-#include <vector>
-
 #include "texture.hpp"
-#include "game.hpp"
 
 using namespace std;
 
@@ -14,7 +9,7 @@ const int XOFF = 24;
 const int YOFF = 9;
 
 //Image link
-const std::string chessboardLink = "img/chessboard.png";
+const std::string ChessboardLink = "img/background/chessboard.png";
 
 class Chessboard{
 public:

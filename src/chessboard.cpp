@@ -1,7 +1,7 @@
 #include "chessboard.hpp"
 
 Chessboard::Chessboard():
-    chessboard(chessboardLink)
+    chessboard(ChessboardLink)
 {
 }
 
