@@ -7,6 +7,21 @@
 #define fi first
 #define se second
 
+//dot appeared when moving pieces
+const std::string Dot1Link = "img/dots/dot1.png";
+const std::string Dot2Link = "img/dots/dot2.png";
+
+//song to play
+const std::string Theme2Link = "music/song/sweden.mp3";
+
+//SFXs
+const std::string CaptureSFXLink = "music/sfx/capture.wav";
+const std::string CastleSFXLink = "music/sfx/castle.wav";
+const std::string CheckSFXLink = "music/sfx/check.wav";
+const std::string GameOverSFXLink = "music/sfx/game_over.wav";
+const std::string MoveSFXLink = "music/sfx/move.wav";
+const std::string PromoteSFXLink = "music/sfx/promote.wav";
+
 //move in a chess board:
 // +) 0 -> 3: bishop
 // +) 4 -> 7: rook
@@ -63,10 +78,13 @@ public:
     Match();
     ~Match();
     void init();
+    void finish();
+    void startNewMatch();
     void mainEvent();
     void draw();
     void move();
     void calculate();
+    void outcome();
 
 public:
     void drawPromotion();
@@ -93,11 +111,14 @@ public:
     }
 
 private:
+    Texture dot1, dot2;
+    Music theme;
+    SFX captureSFX, castleSFX, checkSFX, game_overSFX, moveSFX, promoteSFX;
     SDL_Rect square[8][8];
     Chessboard board;
     Piece piece[8][8];
     Uint64 movable[8][8];
-    deque<Movement> dMove;
+    vector<Movement> dMove;
     int numMove, numTurn;
     int promote;
     int tempBoard[8][8];
@@ -106,10 +127,9 @@ private:
     bool quit, hold_piece;
     bool currentSide;
     pa cur;
-    Texture dot1, dot2;
 
 //For the animation
 public:
-    void drawAnimation(const Movement& X);
+    void drawAnimation_SFX(const Movement& X);
     void drawAnimationStep(int step, const vector<Change>& ani);
 };

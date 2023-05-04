@@ -1,11 +1,16 @@
 #include "open_screen.hpp"
 
-OpenScreen::OpenScreen(): screen(StartScreenLink){}
+OpenScreen::OpenScreen(): screen(StartScreenLink), theme(Theme1Link){}
 
 OpenScreen::~OpenScreen(){}
 
 void OpenScreen::init(){
     quit = false;
+    theme.play();
+}
+
+void OpenScreen::finish(){
+    theme.stop();
 }
 
 void OpenScreen::mainEvent(){
@@ -15,6 +20,7 @@ void OpenScreen::mainEvent(){
         move();
         if(Basic::instance().askQuit()) return;
     }
+    finish();
 }
 
 void OpenScreen::move(){
@@ -23,6 +29,7 @@ void OpenScreen::move(){
         if( e.type == SDL_QUIT ){ Basic::instance().rageQuit(); return;}
         if( e.type == SDL_KEYDOWN ){
             if( e.key.keysym.sym == SDLK_q ){quit = true; return;}
+            if( e.key.keysym.sym == SDLK_1 ){std::cerr<< Mix_VolumeMusic(128-Mix_VolumeMusic(-1)) << '\n';}
         }
     }
 }

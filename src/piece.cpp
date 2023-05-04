@@ -9,7 +9,7 @@ void Piece::setImage(const std::string& path){
 
 void Piece::setVal(int _val){
     if(_val == -1){
-        image.freeTexture();
+        image.free();
         val = -1;
         return;
     }
@@ -20,7 +20,7 @@ void Piece::setVal(int _val){
 }
 
 void Piece::eaten(){
-    image.freeTexture();
+    image.free();
     side = 0, val = -1;
 }
 

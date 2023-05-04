@@ -24,8 +24,18 @@ Change::Change(pa pos, int _pieceIn):
 
 ///about Match class
 Match::Match(){
-    dot1 = Texture("img/dot1.png"); dot1.setAlpha(0x78);
-    dot2 = Texture("img/dot2.png"); dot2.setAlpha(0x78);
+    //texture
+    dot1 = Texture(Dot1Link); dot1.setAlpha(0x78);
+    dot2 = Texture(Dot2Link); dot2.setAlpha(0x78);
+    //music
+    theme = Music(Theme2Link);
+    //sfx
+    captureSFX = SFX(CaptureSFXLink);
+    castleSFX = SFX(CastleSFXLink);
+    checkSFX = SFX(CheckSFXLink);
+    game_overSFX = SFX(GameOverSFXLink);
+    moveSFX = SFX(MoveSFXLink);
+    promoteSFX = SFX(PromoteSFXLink);
     FU(i, 0, 8) FU(j, 0, 8)
         square[i][j] = SDL_Rect{XOFF + j * PIECE_SIZE , YOFF + i * PIECE_SIZE,
                                 PIECE_SIZE, PIECE_SIZE};
@@ -33,9 +43,19 @@ Match::Match(){
 
 Match::~Match(){}
 
+//distinguish music from the chess match
 void Match::init(){
+    theme.play();
+    startNewMatch();
+}
+
+void Match::finish(){
+    theme.stop();
+}
+
+void Match::startNewMatch(){
     reCalculate = false;
-    quit = hold_piece = false;
+    quit = hold_piece = inCheck = false;
     numMove = numTurn = 0;
     promote = -1;
     currentSide = BLACK;
@@ -54,6 +74,7 @@ void Match::mainEvent(){
         move();
         if(Basic::instance().askQuit()) return;
     }
+    finish();
 }
 
 //detail of the move
@@ -63,7 +84,7 @@ void Match::move(){
         if( e.type == SDL_QUIT ){ Basic::instance().rageQuit(); return;}
         if( e.type == SDL_KEYDOWN ){
             if( e.key.keysym.sym == SDLK_q ){quit = true; return;}
-            if( e.key.keysym.sym == SDLK_r ){init(); return;} //reset field
+            if( e.key.keysym.sym == SDLK_r ){startNewMatch(); return;} //reset field
             if( e.key.keysym.sym == SDLK_ESCAPE ) promote = -1, hold_piece = false; //cancel move
         }
         if( e.type == SDL_MOUSEBUTTONDOWN ) {
@@ -120,9 +141,6 @@ void Match::move(){
 //cal the possible move for each side
 void Match::calculate(){
     suitableMove = 0;
-
-    inCheck = isThatCheck(currentSide);
-    cout << "Check: " << inCheck << endl;
 
     FU(i, 0, 8) FU(j, 0, 8){
         movable[i][j] = 0;
@@ -232,7 +250,13 @@ void Match::calculate(){
             default:{cerr << "Error: No piece detected\n"; throw;}
         }
     }
+    outcome();
+}
+
+//outcome of the match
+void Match::outcome(){
     if(!suitableMove){
+        game_overSFX.play();
         cerr << (inCheck ? "CHECKMATE!\n" : "Draw by Stalemate\n");
     }
 }
@@ -341,7 +365,7 @@ void Match::saveMove(pa from, pa to, int promoteTo){
     }
     dMove.push_back(Movement(from, to, piece[xFrom][yFrom].getVal(),
                              piece[xTo][yTo].getVal(), promoteTo, speCase));
-    drawAnimation(dMove.back());
+    drawAnimation_SFX(dMove.back());
 }
 
 //go to a new move
@@ -470,15 +494,31 @@ bool Match::check_tempBoard(bool Side){
 }
 
 //draw animation
-void Match::drawAnimation(const Movement& X){
+void Match::drawAnimation_SFX(const Movement& X){
     int Ally = NUM_OF_PIECES * currentSide, Enemy = 6 - Ally;
     vector<Change> ani;
+    bool playEffect = false;
+
+    ///Calculate check here
+    inCheck = isThatCheck(currentSide ^ 1);
+    cout << "Check: " << inCheck << endl;
+
+    if(inCheck) checkSFX.play(), playEffect = true;
+    if(X.speCase == PROMOTING){
+        promoteSFX.play(), playEffect = true;
+        ani.push_back(Change(X.from, X.to, -(Ally + X.promoteTo + 1)));
+        if(X.pieceTaken != -1) ani.push_back(Change(X.to, Enemy + X.pieceTaken));
+        return;
+    }
+    if(!playEffect && X.pieceTaken != -1) captureSFX.play(), playEffect = true;
     if(X.speCase == NOTHING){
+        if(!playEffect) moveSFX.play(), playEffect = true;
         ani.push_back(Change(X.from, X.to, Ally + X.pieceKind));
         if(X.pieceTaken != -1) ani.push_back(Change(X.to, Enemy + X.pieceTaken));
     }
     if(X.speCase == CASTLING){
         assert(X.pieceKind == KING);
+        if(!playEffect) castleSFX.play(), playEffect = true;
         ani.push_back(Change(X.from, X.to, Ally + KING));
         int row = X.from.fi;
         if(X.to.se == 2) ani.push_back(Change(make_pair(row, 0), make_pair(row, 3), Ally + ROOK)); //o-o
@@ -486,14 +526,10 @@ void Match::drawAnimation(const Movement& X){
     }
     if(X.speCase == EN_PASSANT){
         assert(X.pieceKind == PAWN);
+        captureSFX.play(), playEffect = true;
         ani.push_back(Change(X.from, X.to, Ally + PAWN));
         int row = X.from.fi, col = X.to.se;
         ani.push_back(Change(make_pair(row, col), Enemy + PAWN));
-    }
-    if(X.speCase == PROMOTING){
-        ani.push_back(Change(X.from, X.to, -(Ally + X.promoteTo + 1)));
-        if(X.pieceTaken != -1) ani.push_back(Change(X.to, Enemy + X.pieceTaken));
-        return;
     }
     FU(i, 0, 8) FU(j, 0, 8) tempBoard[i][j] = -1;
     for(auto X: ani){

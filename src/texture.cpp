@@ -7,16 +7,14 @@ Texture::Texture(){
 Texture::Texture(const std::string& filename)
 {
     SDL_Surface* loadedSurface = IMG_Load( filename.c_str() );
-    if( loadedSurface == NULL )
-	{
-		printf( "Unable to load image %s! SDL_image Error: %s\n", filename.c_str(), IMG_GetError() );
+    if( loadedSurface == NULL ){
+		std::cerr << "Unable to load image " << filename << "! SDL Error: " << IMG_GetError() <<'\n';
         throw;
 	}
 
 	texture = SDL_CreateTextureFromSurface( Basic::instance().m_renderer, loadedSurface );
-    if( texture == NULL )
-    {
-        printf( "Unable to create texture from %s! SDL Error: %s\n", filename.c_str(), SDL_GetError() );
+    if( texture == NULL ){
+        std::cerr << "Unable to create texture from " << filename << "! SDL Error: " << IMG_GetError() <<'\n';
         throw;
     }
     width = loadedSurface->w;
@@ -25,7 +23,7 @@ Texture::Texture(const std::string& filename)
 }
 
 Texture::~Texture(){
-    freeTexture();
+    free();
 }
 
 void Texture::setAlpha (Uint8 a){
@@ -41,7 +39,7 @@ void Texture::draw(int x, int y){
     draw(rect);
 }
 
-void Texture::freeTexture() {
+void Texture::free() {
     if (texture != NULL) {
         SDL_DestroyTexture(texture);
         texture = NULL;

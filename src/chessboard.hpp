@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "texture.hpp"
 
 using namespace std;
