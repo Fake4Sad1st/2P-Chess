@@ -1,0 +1,173 @@
+#include "match.hpp"
+
+//draw the board after each move
+void Match::draw(){
+    //Clear screen
+    SDL_RenderClear( Basic::instance().m_renderer );
+
+    //Render texture to screen
+    board.draw();
+
+    drawSquare(); //draw the squares
+
+    if(!endFlag){
+        FU(i, 0, 8) FU(j, 0, 8){
+            piece[i][j].setVal(board.getValue(i, j));
+        }
+        if(reCalculate) calculate(), reCalculate = false;
+
+        if(promote != -1) drawPromotion();
+        else if(holdPiece) drawDot(); //draw the movable square
+    }
+    else drawEndgame();
+
+    //draw the pieces
+    FU(i, 0, 8) FU(j, 0, 8)
+        if(promote == -1 || tempBoard[i][j] == -1) piece[i][j].draw(square[i][j]);
+
+    //Update screen
+    SDL_RenderPresent( Basic::instance().m_renderer );
+    SDL_Delay(20);
+}
+
+void Match::drawSquare(){
+    if(!dMove.empty()){
+        addColorSquare(COLOR_MOVED, dMove.back().from);
+        addColorSquare(COLOR_MOVED, dMove.back().to);
+    }
+    if(holdPiece) addColorSquare(COLOR_MOVED, cur);
+}
+
+void Match::drawDot(){
+    Uint64 temp = movable[cur.fi][cur.se];
+    short _ = -1;
+    FU(i, 0, 8) FU(j, 0, 8){
+        ++ _;
+        if(!ONBIT(temp, _)){canMoveTo[i][j] = 0; continue;}
+        canMoveTo[i][j] = 1;
+        if(piece[i][j].getVal() == -1) dot1.draw(square[i][j]);
+        else dot2.draw(square[i][j]);
+    }
+}
+
+void Match::drawEndgame(){
+    assert(endFlag == true);
+    FU(i, 0, 8) FU(j, 0, 8) if(piece[i][j].getVal() == KING){
+        if(piece[i][j].getSide() == WHITE) WKingSym.draw(smSquare[i][j]);
+        else BKingSym.draw(smSquare[i][j]);
+    }
+}
+
+//add the promotion
+void Match::drawPromotion(){
+    Texture T;
+    FU(i, 0, 8) FU(j, 0, 8) if(tempBoard[i][j] > 0) {
+        addColorSquare(COLOR_PROMOTE, make_pair(i, j));
+        T = Texture(PieceLink[tempBoard[i][j]]);
+        T.draw(square[i][j]);
+    }
+}
+
+//
+void Match::create_promotionBoard(int col){
+    promote = col;
+    int dir = (currentSide == WHITE ? 1 : -1), coef = NUM_OF_PIECES * currentSide,
+        row = (currentSide == WHITE ? 0 : 7);
+    FU(i, 0, 8) FU(j, 0, 8) tempBoard[i][j] = -1;
+    tempBoard[cur.fi][cur.se] = 0;
+    for(int i = 0, k = coef + QUEEN; i < 4; ++i, --k){
+        int cRow = row + dir*i;
+        tempBoard[cRow][col] = k;
+    }
+}
+
+//draw animation
+void Match::drawAnimation_SFX(const Movement& X){
+    int Ally = 6 * currentSide, Enemy = 6 - Ally;
+    vector<Change> ani;
+    bool playEffect = false;
+
+    ///Calculate check here
+    inCheck = isThatCheck(currentSide ^ 1);
+    if(inCheck) checkSFX.play(), playEffect = true;
+
+    if(X.speCase == PROMOTING){
+        promoteSFX.play(), playEffect = true;
+        ani.push_back(Change(X.from, X.to, -(Ally + X.promoteTo + 1)));
+        if(X.pieceTaken != -1) ani.push_back(Change(X.to, Enemy + X.pieceTaken));
+        return;
+    }
+    if(!playEffect && X.pieceTaken != -1) captureSFX.play(), playEffect = true;
+    if(X.speCase == NOTHING){
+        if(!playEffect) moveSFX.play(), playEffect = true;
+        ani.push_back(Change(X.from, X.to, Ally + X.pieceKind));
+        if(X.pieceTaken != -1) ani.push_back(Change(X.to, Enemy + X.pieceTaken));
+    }
+    if(X.speCase == CASTLING){
+        assert(X.pieceKind == KING);
+        if(!playEffect) castleSFX.play(), playEffect = true;
+        ani.push_back(Change(X.from, X.to, Ally + KING));
+        int row = X.from.fi;
+        if(X.to.se == 2) ani.push_back(Change(make_pair(row, 0), make_pair(row, 3), Ally + ROOK)); //o-o
+        else ani.push_back(Change(make_pair(row, 7), make_pair(row, 5), Ally + ROOK)); //o-o-o
+    }
+    if(X.speCase == EN_PASSANT){
+        assert(X.pieceKind == PAWN);
+        captureSFX.play(), playEffect = true;
+        ani.push_back(Change(X.from, X.to, Ally + PAWN));
+        int row = X.from.fi, col = X.to.se;
+        ani.push_back(Change(make_pair(row, col), Enemy + PAWN));
+    }
+    FU(i, 0, 8) FU(j, 0, 8) tempBoard[i][j] = -1;
+    for(auto X: ani){
+        tempBoard[X.from.fi][X.from.se] = 0;
+        if(X.to.fi != -1) tempBoard[X.to.fi][X.to.se] = 0;
+    }
+    FU(i, 1, NUM_FRAME) drawAnimationStep(i, ani);
+}
+
+void Match::drawAnimationStep(int step, const vector<Change>& ani){
+    //Clear screen
+    SDL_RenderClear( Basic::instance().m_renderer );
+
+    //Render texture to screen
+    board.draw();
+
+    drawSquare(); //draw the squares
+
+    //draw the pieces
+    FU(i, 0, 8) FU(j, 0, 8)
+        if(tempBoard[i][j] == -1) piece[i][j].draw(square[i][j]);
+
+    Texture T;
+    for(auto X: ani){
+        if(X.Case == MOVED){
+            int xFrom = square[X.from.fi][X.from.se].x, yFrom = square[X.from.fi][X.from.se].y;
+            int xTo = square[X.to.fi][X.to.se].x, yTo = square[X.to.fi][X.to.se].y;
+            int _x = xFrom + (xTo - xFrom) / NUM_FRAME * step, _y = yFrom + (yTo - yFrom) / NUM_FRAME * step;
+            T = Texture(PieceLink[X.pieceIn]);
+            T.draw(_x, _y);
+        }
+        else{
+            T = Texture(PieceLink[X.pieceIn]);
+            Uint8 a = 16 * (NUM_FRAME - step);
+            T.setAlpha(a);
+            T.draw(square[X.from.fi][X.from.se]);
+        }
+    }
+
+    //Update screen
+    SDL_RenderPresent( Basic::instance().m_renderer );
+    SDL_Delay(8);
+}
+
+//add color to a specific square
+void Match::addColorSquare(Uint32 val, pa X){
+    if(val == COLOR_MOVED) SDL_SetRenderDrawBlendMode(Basic::instance().m_renderer, SDL_BLENDMODE_BLEND);
+    else SDL_SetRenderDrawBlendMode(Basic::instance().m_renderer, SDL_BLENDMODE_NONE);
+    Uint8 a[4];
+    for(int i = 3; i >= 0; i--) a[i] = val & 255, val >>= 8;
+    SDL_SetRenderDrawColor(Basic::instance().m_renderer, a[0], a[1], a[2], a[3]);
+    SDL_RenderFillRect(Basic::instance().m_renderer, &square[X.fi][X.se]);
+}
+

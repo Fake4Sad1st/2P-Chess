@@ -30,6 +30,7 @@ void OpenScreen::move(){
         if( e.type == SDL_KEYDOWN ){
             if( e.key.keysym.sym == SDLK_q ){quit = true; return;}
             if( e.key.keysym.sym == SDLK_1 ){std::cerr<< Mix_VolumeMusic(128-Mix_VolumeMusic(-1)) << '\n';}
+            if( e.key.keysym.sym == SDLK_m ){std::cerr<< Mix_VolumeMusic(0) << '\n';}
         }
     }
 }

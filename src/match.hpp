@@ -7,9 +7,21 @@
 #define fi first
 #define se second
 
+#define ONBIT(x, i) ((x) >> (i) & 1)
+#define UPBIT(x, i) ((x) |= (1ULL << (i)))
+
 //dot appeared when moving pieces
 const std::string Dot1Link = "img/dots/dot1.png";
 const std::string Dot2Link = "img/dots/dot2.png";
+
+//end symbol
+const std::string CheckmateBlackLink = "img/end_symbol/checkmate_black.png";
+const std::string CheckmateWhiteLink = "img/end_symbol/checkmate_white.png";
+const std::string DrawBlackLink = "img/end_symbol/draw_black.png";
+const std::string DrawWhiteLink = "img/end_symbol/draw_white.png";
+const std::string ResignBlackLink = "img/end_symbol/resign_black.png";
+const std::string ResignWhiteLink = "img/end_symbol/resign_white.png";
+const std::string WinnerLink = "img/end_symbol/winner.png";
 
 //song to play
 const std::string Theme2Link = "music/song/sweden.mp3";
@@ -72,8 +84,30 @@ public:
     int pieceIn;
 };
 
+//about the endings
+enum ENDINGS{
+    NO_POSSIBLE_MOVE,
+    POSSIBLE_MOVE,
+    RESIGN,
+    DRAW_OFFER,
+    DRAW_AUTOMATIC,
+    NUM_FLAGS,
+};
+
 //store the match details
 class Match{
+public://support main
+    bool insideBoard(int x, int y){
+        return 0<=x && x<8 && 0<=y && y<8;
+    }
+    int realPos(int x, int y){
+        return x * 8 + y;
+    }
+    void addBit(Uint64 &x, int b){
+        possibleMove = 1;
+        UPBIT(x, b);
+    }
+
 public:
     Match();
     ~Match();
@@ -81,55 +115,49 @@ public:
     void finish();
     void startNewMatch();
     void mainEvent();
-    void draw();
-    void move();
     void calculate();
-    void outcome();
+    void outcome(short flag);
 
-public:
+public://draw only
+    void draw();
     void drawPromotion();
-    void saveMove(pa from, pa to, int promoteTo = -1);
-    void add_numMove();
-    void addColorSquare(Uint32 val, pa X);
-    void addBit(Uint64 &x, int b);
+    void drawSquare();
+    void drawDot();
+    void drawEndgame();
+    void drawAnimation_SFX(const Movement& X);
+    void drawAnimationStep(int step, const vector<Change>& ani);
 
-//for check
-public:
+public://move only
+    void move();
+    void add_numMove();
+    void saveMove(pa from, pa to, int promoteTo = -1);
+
+public://check only
     bool isThatCheck(bool sideGotChecked, pa From = make_pair(-1, -1), pa To = make_pair(-1, -1), short speCase=NOTHING);
     void create_promotionBoard(int col);
     void create_tempBoard(int xFrom, int yFrom, int xTo, int yTo, short speCase);
     bool check_tempBoard(bool Side);
+    void addColorSquare(Uint32 val, pa X);
 private:
-    bool inCheck, suitableMove;
+    bool inCheck, possibleMove;
 
-public:
-    bool insideBoard(int x, int y){
-        return 0<=x && x<8 && 0<=y && y<8;
-    }
-    int realPos(int x, int y){
-        return x * 8 + y;
-    }
 
 private:
-    Texture dot1, dot2;
+    Texture dot1, dot2, WKingSym, BKingSym;
     Music theme;
     SFX captureSFX, castleSFX, checkSFX, game_overSFX, moveSFX, promoteSFX;
-    SDL_Rect square[8][8];
+    SDL_Rect square[8][8], smSquare[8][8];
     Chessboard board;
     Piece piece[8][8];
     Uint64 movable[8][8];
     vector<Movement> dMove;
+
     int numMove, numTurn;
     int promote;
     int tempBoard[8][8];
     bool canMoveTo[8][8], reCalculate;
     bool hasMoved[8][8];
-    bool quit, hold_piece;
+    bool quit, holdPiece, endFlag;
     bool currentSide;
     pa cur;
-
-//For the animation
-public:
-    void drawAnimation_SFX(const Movement& X);
-    void drawAnimationStep(int step, const vector<Change>& ani);
 };
