@@ -21,7 +21,7 @@ public:
     }
 
     void setAlpha(Uint8 a);
-    void draw(SDL_Rect &rect);
+    void draw(SDL_Rect rect);
     void draw(int x, int y);
     void free();
 

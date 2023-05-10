@@ -8,6 +8,7 @@ void Match::move(){
         if( e.type == SDL_KEYDOWN ){
             if( e.key.keysym.sym == SDLK_q ){quit = true; return;}
             if( e.key.keysym.sym == SDLK_r ){startNewMatch(); return;} //reset field
+            if( e.key.keysym.sym == SDLK_2 ){chessKind ^= 1; return;}
             if( e.key.keysym.sym == SDLK_ESCAPE ) promote = -1, holdPiece = false; //cancel move
         }
         if( e.type == SDL_MOUSEBUTTONDOWN ) {
@@ -28,7 +29,7 @@ void Match::move(){
                     }
                     holdPiece = false;
                     if(!canMoveTo[x_board][y_board]){
-                        if(cur != make_pair(x_board, y_board) && piece[cur.fi][cur.se].ally(piece[x_board][y_board]))
+                        if(cur != make_pair(x_board, y_board) && piece[x_board][y_board].isPiece())
                             cur = make_pair(x_board, y_board), holdPiece = true;
                         continue;
                     }
@@ -42,7 +43,7 @@ void Match::move(){
                     add_numMove();
                 }
                 else {
-                    if (piece[x_board][y_board].getSide() == currentSide) {
+                    if (piece[x_board][y_board].isPiece()) {
                         holdPiece = true;
                         cur = make_pair(x_board, y_board);
                     }

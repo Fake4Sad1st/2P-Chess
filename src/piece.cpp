@@ -7,7 +7,7 @@ void Piece::setImage(const std::string& path){
     image = Texture(path);
 }
 
-void Piece::setVal(int _val){
+void Piece::setVal(bool chessKind, int _val){
     if(_val == -1){
         image.free();
         val = -1;
@@ -16,7 +16,7 @@ void Piece::setVal(int _val){
     assert(0 <= _val && _val < 12);
     val = _val % 6;
     side = ( _val >= 6 ? 1 : 0 );
-    Piece::setImage(PieceLink[_val]);
+    Piece::setImage(PieceLink[chessKind][_val]);
 }
 
 void Piece::eaten(){

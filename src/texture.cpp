@@ -30,7 +30,7 @@ void Texture::setAlpha (Uint8 a){
     SDL_SetTextureAlphaMod(texture, a);
 }
 
-void Texture::draw(SDL_Rect& rect){
+void Texture::draw(SDL_Rect rect){
     SDL_RenderCopy(Basic::instance().m_renderer, texture, NULL, &rect);
 }
 

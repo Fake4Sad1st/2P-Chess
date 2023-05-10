@@ -21,19 +21,33 @@ enum CHESS_PIECE{
 };
 
 //image links
-const std::string PieceLink[] = {
-    "img/piece/WhitePawn.png",
-    "img/piece/WhiteBishop.png",
-    "img/piece/WhiteRook.png",
-    "img/piece/WhiteKnight.png",
-    "img/piece/WhiteQueen.png",
-    "img/piece/WhiteKing.png",
-    "img/piece/BlackPawn.png",
-    "img/piece/BlackBishop.png",
-    "img/piece/BlackRook.png",
-    "img/piece/BlackKnight.png",
-    "img/piece/BlackQueen.png",
-    "img/piece/BlackKing.png",
+const std::string PieceLink[2][12] = {
+    {   "img/piece/1/wp.png",
+        "img/piece/1/wb.png",
+        "img/piece/1/wr.png",
+        "img/piece/1/wn.png",
+        "img/piece/1/wq.png",
+        "img/piece/1/wk.png",
+        "img/piece/1/bp.png",
+        "img/piece/1/bb.png",
+        "img/piece/1/br.png",
+        "img/piece/1/bn.png",
+        "img/piece/1/bq.png",
+        "img/piece/1/bk.png",
+    },
+    {   "img/piece/2/wp.png",
+        "img/piece/2/wb.png",
+        "img/piece/2/wr.png",
+        "img/piece/2/wn.png",
+        "img/piece/2/wq.png",
+        "img/piece/2/wk.png",
+        "img/piece/2/bp.png",
+        "img/piece/2/bb.png",
+        "img/piece/2/br.png",
+        "img/piece/2/bn.png",
+        "img/piece/2/bq.png",
+        "img/piece/2/bk.png",
+    },
 };
 
 // basic chess pieces
@@ -42,7 +56,7 @@ public:
     Piece();
     ~Piece();
     void setImage(const std::string& path);
-    void setVal(int _val);
+    void setVal(bool chessKind, int _val);
     void eaten();
     void draw(SDL_Rect& rect);
 

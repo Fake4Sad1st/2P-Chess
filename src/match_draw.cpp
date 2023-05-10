@@ -10,12 +10,11 @@ void Match::draw(){
 
     drawSquare(); //draw the squares
 
-    if(!endFlag){
-        FU(i, 0, 8) FU(j, 0, 8){
-            piece[i][j].setVal(board.getValue(i, j));
-        }
-        if(reCalculate) calculate(), reCalculate = false;
+    FU(i, 0, 8) FU(j, 0, 8)
+        piece[i][j].setVal(chessKind, board.getValue(i, j));
 
+    if(!endFlag){
+        if(reCalculate) calculate(), reCalculate = false;
         if(promote != -1) drawPromotion();
         else if(holdPiece) drawDot(); //draw the movable square
     }
@@ -35,7 +34,7 @@ void Match::drawSquare(){
         addColorSquare(COLOR_MOVED, dMove.back().from);
         addColorSquare(COLOR_MOVED, dMove.back().to);
     }
-    if(holdPiece) addColorSquare(COLOR_MOVED, cur);
+    if(holdPiece && (dMove.empty() || cur != dMove.back().to)) addColorSquare(COLOR_MOVED, cur);
 }
 
 void Match::drawDot(){
@@ -63,7 +62,7 @@ void Match::drawPromotion(){
     Texture T;
     FU(i, 0, 8) FU(j, 0, 8) if(tempBoard[i][j] > 0) {
         addColorSquare(COLOR_PROMOTE, make_pair(i, j));
-        T = Texture(PieceLink[tempBoard[i][j]]);
+        T = Texture(PieceLink[chessKind][tempBoard[i][j]]);
         T.draw(square[i][j]);
     }
 }
@@ -145,11 +144,11 @@ void Match::drawAnimationStep(int step, const vector<Change>& ani){
             int xFrom = square[X.from.fi][X.from.se].x, yFrom = square[X.from.fi][X.from.se].y;
             int xTo = square[X.to.fi][X.to.se].x, yTo = square[X.to.fi][X.to.se].y;
             int _x = xFrom + (xTo - xFrom) / NUM_FRAME * step, _y = yFrom + (yTo - yFrom) / NUM_FRAME * step;
-            T = Texture(PieceLink[X.pieceIn]);
-            T.draw(_x, _y);
+            T = Texture(PieceLink[chessKind][X.pieceIn]);
+            T.draw(SDL_Rect {_x, _y, PIECE_SIZE, PIECE_SIZE});
         }
         else{
-            T = Texture(PieceLink[X.pieceIn]);
+            T = Texture(PieceLink[chessKind][X.pieceIn]);
             Uint8 a = 16 * (NUM_FRAME - step);
             T.setAlpha(a);
             T.draw(square[X.from.fi][X.from.se]);

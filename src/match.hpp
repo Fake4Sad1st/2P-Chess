@@ -1,5 +1,7 @@
 #pragma once
 
+#include <map>
+
 #include "piece.hpp"
 #include "chessboard.hpp"
 
@@ -41,6 +43,10 @@ const std::string PromoteSFXLink = "music/sfx/promote.wav";
 // +) 8 -> 15: knight
 const int XMOVE[] = {1, 1, -1, -1, 0, 1, 0, -1, 1, 1, 2, 2, -1, -1, -2, -2};
 const int YMOVE[] = {1, -1, 1, -1, 1, 0, -1, 0, 2, -2, 1, -1, 2, -2, 1, -1};
+
+//draw parameter
+const int MAX_DELAY_MOVE = 50;
+const short MAX_REPEAT_CHESSBOARD = 3;
 
 //color
 const Uint32 COLOR_MOVED = 0xF6F6699F;
@@ -116,9 +122,9 @@ public:
     void startNewMatch();
     void mainEvent();
     void calculate();
-    void outcome(short flag);
 
-public://draw only
+///draw only
+public:
     void draw();
     void drawPromotion();
     void drawSquare();
@@ -127,12 +133,14 @@ public://draw only
     void drawAnimation_SFX(const Movement& X);
     void drawAnimationStep(int step, const vector<Change>& ani);
 
-public://move only
+///move only
+public:
     void move();
     void add_numMove();
     void saveMove(pa from, pa to, int promoteTo = -1);
 
-public://check only
+///check only
+public:
     bool isThatCheck(bool sideGotChecked, pa From = make_pair(-1, -1), pa To = make_pair(-1, -1), short speCase=NOTHING);
     void create_promotionBoard(int col);
     void create_tempBoard(int xFrom, int yFrom, int xTo, int yTo, short speCase);
@@ -141,6 +149,15 @@ public://check only
 private:
     bool inCheck, possibleMove;
 
+///support function (mostly about draw result)
+public:
+    void outcome(short flag);
+    bool notEnoughPiece();
+    bool repetitionCheck();
+private:
+    int numDelayMove;
+    bool endFlag;
+    map<vector<int>, short > cb_Saver;
 
 private:
     Texture dot1, dot2, WKingSym, BKingSym;
@@ -151,13 +168,15 @@ private:
     Piece piece[8][8];
     Uint64 movable[8][8];
     vector<Movement> dMove;
+    vector<string> signMove;
 
     int numMove, numTurn;
     int promote;
     int tempBoard[8][8];
+    bool chessKind;
     bool canMoveTo[8][8], reCalculate;
     bool hasMoved[8][8];
-    bool quit, holdPiece, endFlag;
+    bool quit, holdPiece;
     bool currentSide;
     pa cur;
 };

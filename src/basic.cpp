@@ -140,6 +140,12 @@ Basic::Basic(){
             throw;
         }
         Mix_VolumeMusic(32);
+
+        //Initialize SDL_ttf
+        if( TTF_Init() == -1 ){
+            std::cerr << "SDL_ttf could not initialize! SDL_ttf Error: " << TTF_GetError() << '\n';
+            throw;
+        }
 	}
 }
 

@@ -20,6 +20,8 @@ const std::string EXE_NAME = "2 Player Chess";
 //Icon link
 const std::string ICON_LINK = "img/icon/2P_Chess.png";
 
+//
+
 //Music when playing
 class Music{
 public:

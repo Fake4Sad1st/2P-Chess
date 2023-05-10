@@ -6,17 +6,16 @@ int main(int argc, char* args[] ){
     Basic::instance();
 
     OpenScreen firstScreen;
-    Match match;
+    Match matchScreen;
 
     while(1){
         firstScreen.mainEvent();
         if(Basic::instance().askQuit()) break;
 
-        match.mainEvent();
+        matchScreen.mainEvent();
         if(Basic::instance().askQuit()) break;
     }
 
     Basic::free();
-
 	return 0;
 }
