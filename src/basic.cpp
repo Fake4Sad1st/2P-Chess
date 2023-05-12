@@ -139,7 +139,7 @@ Basic::Basic(){
             std::cerr << "SDL_mixer could not initialize! SDL_mixer Error: " << Mix_GetError() << '\n';
             throw;
         }
-        Mix_VolumeMusic(32);
+        Mix_VolumeMusic(40);
 
         //Initialize SDL_ttf
         if( TTF_Init() == -1 ){

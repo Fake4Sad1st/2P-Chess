@@ -1,3 +1,7 @@
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <iomanip>
+
 #include "match.hpp"
 
 //cal the possible move for each side
@@ -14,7 +18,6 @@ void Match::calculate(){
             cb_Saver.clear();
         }
         else if(++numDelayMove == MAX_DELAY_MOVE){outcome(DRAW_AUTOMATIC); return;}
-        cerr << "Delay Move = " << numDelayMove << '\n';
     }
 
     if(repetitionCheck()){
@@ -133,6 +136,60 @@ void Match::calculate(){
     }
     outcome(possibleMove);
 }
+//outcome of the match
+void Match::outcome(short flag){
+    if(flag == POSSIBLE_MOVE) return;
+    game_overSFX.play();
+    endFlag = true;
+    //stop the possible move
+    FU(i, 0, 8) FU(j, 0, 8) canMoveTo[i][j] = 0;
+
+    switch(flag){
+        case NO_POSSIBLE_MOVE:
+            if(inCheck){
+                if(currentSide == WHITE){
+                    Message = "Black";
+                    WKingSym = Texture(CheckmateWhiteLink);
+                    BKingSym = Texture(WinnerLink);
+                }
+                else{
+                    Message = "White";
+                    WKingSym = Texture(WinnerLink);
+                    BKingSym = Texture(CheckmateBlackLink);
+                }
+                Message += " wins by checkmate!\n";
+            }
+            else{
+                WKingSym = Texture(DrawWhiteLink);
+                BKingSym = Texture(DrawBlackLink);
+                Message = "Draw by stalemate!\n";
+            }
+            break;
+        case RESIGN:
+            if(currentSide == WHITE){
+                Message = "White";
+                WKingSym = Texture(WinnerLink);
+                BKingSym = Texture(ResignBlackLink);
+            }
+            else{
+                Message = "Black";
+                WKingSym = Texture(ResignWhiteLink);
+                BKingSym = Texture(WinnerLink);
+            }
+            Message += " wins.\n Opponent resigns!\n";
+            break;
+        case DRAW_OFFER:
+            WKingSym = Texture(DrawWhiteLink);
+            BKingSym = Texture(DrawBlackLink);
+            Message = "Draw by offer!\n";
+            break;
+        case DRAW_AUTOMATIC:
+            WKingSym = Texture(DrawWhiteLink);
+            BKingSym = Texture(DrawBlackLink);
+            Message = "Automatic draw!\n";
+            break;
+    }
+}
 
 bool Match::notEnoughPiece(){
     bool addPiece = false;
@@ -153,57 +210,47 @@ bool Match::repetitionCheck(){
     return false;
 }
 
-//outcome of the match
-void Match::outcome(short flag){
-    if(flag == POSSIBLE_MOVE) return;
-    game_overSFX.play();
-    endFlag = true;
-    //stop the possible move
-    FU(i, 0, 8) FU(j, 0, 8) canMoveTo[i][j] = 0;
+void Match::writeMatchReport(){
+    if (!endFlag || saveMatch){ cerr << "u can't\n"; return;}
 
-    switch(flag){
-        case NO_POSSIBLE_MOVE:
-            if(inCheck){
-                if(currentSide == WHITE){
-                    cerr << "Black";
-                    WKingSym = Texture(CheckmateWhiteLink);
-                    BKingSym = Texture(WinnerLink);
-                }
-                else{
-                    cerr << "White";
-                    WKingSym = Texture(WinnerLink);
-                    BKingSym = Texture(CheckmateBlackLink);
-                }
-                cerr << " wins by checkmate!\n";
-            }
-            else{
-                WKingSym = Texture(DrawWhiteLink);
-                BKingSym = Texture(DrawBlackLink);
-                cerr << "Draw by stalemate!\n";
-            }
-            break;
-        case RESIGN:
-            if(currentSide == WHITE){
-                cerr << "White";
-                WKingSym = Texture(WinnerLink);
-                BKingSym = Texture(ResignBlackLink);
-            }
-            else{
-                cerr << "Black";
-                WKingSym = Texture(ResignWhiteLink);
-                BKingSym = Texture(WinnerLink);
-            }
-            cerr << " wins.\n Opponent resigns!\n";
-            break;
-        case DRAW_OFFER:
-            WKingSym = Texture(DrawWhiteLink);
-            BKingSym = Texture(DrawBlackLink);
-            cerr << "Draw by offer!\n";
-            break;
-        case DRAW_AUTOMATIC:
-            WKingSym = Texture(DrawWhiteLink);
-            BKingSym = Texture(DrawBlackLink);
-            cerr << "Automatic draw!\n";
-            break;
+    //create file name
+    time_t t = time(0);   // get time now
+    tm* now = localtime(&t);
+    string X = convert(now->tm_mday, 2), Y = convert(now->tm_mon + 1, 2), Z = convert(now->tm_year + 1900, 4);
+    string Date1 = X+Y+Z, Date2 = X+'/'+Y+'/'+Z;
+    X = convert(now->tm_hour, 2), Y = convert(now->tm_min, 2), Z = convert(now->tm_sec, 2);
+    string Time1 = X+Y+Z, Time2 = X+':'+Y+':'+Z;
+
+    string filename = "match_report";
+    mkdir(filename.c_str());
+    filename += '/' + Date1 + '_' + Time1 + ".txt";
+    ofstream file;
+    file.open(filename);
+    file << "Match report is saved on " << Date2 << ", " << Time2 << ".\n\n";
+    int tmp, numSpace = 0, u = numTurn;
+    while(u) ++numSpace, u /= 10;
+    FU(i, 0, numSpace + 1) file << ' ';
+    file << "        WHITE                   BLACK         \n";
+    int xTurn = 0, xSide = BLACK;
+    for(auto str: signMove){
+        xSide ^= 1;
+        if(xSide == WHITE){
+            ++xTurn; tmp = 0;
+            u = xTurn;
+            while(u) ++tmp, u /= 10;
+            FU(i, 0, numSpace - tmp) file << ' ';
+            file << xTurn << ".        " << str;
+            FU(i, 0, 14 - sz(str)) file << ' ';
+            file << "||";
+        }
+        else{
+            file << "        " << str;
+            FU(i, 0, 14 - sz(str)) file << ' ';
+            file << endl;
+        }
     }
+    if(xSide == WHITE) file << endl;
+    file << "\nResult: " << Message;
+    file.close();
+    saveMatch = true;
 }

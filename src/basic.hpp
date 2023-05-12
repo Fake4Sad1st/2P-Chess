@@ -1,7 +1,9 @@
 #pragma once
 
 #include <iostream>
+#include <fstream>
 #include <cassert>
+
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_mixer.h>
@@ -9,6 +11,7 @@
 
 #define FU(i,a,b) for(int i=(a);i<(b);i++)
 #define cout cerr
+#define sz(v) ((int)(v).size())
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 1012;
@@ -19,8 +22,6 @@ const std::string EXE_NAME = "2 Player Chess";
 
 //Icon link
 const std::string ICON_LINK = "img/icon/2P_Chess.png";
-
-//
 
 //Music when playing
 class Music{

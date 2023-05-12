@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <algorithm>
 
 #include "piece.hpp"
 #include "chessboard.hpp"
@@ -113,6 +114,19 @@ public://support main
         possibleMove = 1;
         UPBIT(x, b);
     }
+    bool onBit(Uint64 x, int b){return ((x >> b) & 1);}
+    string signPos(pa X){
+        char Col = 'a' + X.se, Row = '8' - X.fi;
+        string s; s += Col, s += Row;
+        return s;
+    }
+    string convert(int x, int numChar){
+        string s;
+        while(x) s += '0' + x%10, x /= 10;
+        while(sz(s) < numChar) s += '0';
+        reverse(begin(s),end(s));
+        return s;
+    }
 
 public:
     Match();
@@ -138,6 +152,7 @@ public:
     void move();
     void add_numMove();
     void saveMove(pa from, pa to, int promoteTo = -1);
+    void saveMoveSign(const Movement& X);
 
 ///check only
 public:
@@ -154,10 +169,12 @@ public:
     void outcome(short flag);
     bool notEnoughPiece();
     bool repetitionCheck();
+    void writeMatchReport();
 private:
     int numDelayMove;
     bool endFlag;
     map<vector<int>, short > cb_Saver;
+    bool saveMatch;
 
 private:
     Texture dot1, dot2, WKingSym, BKingSym;
@@ -169,6 +186,7 @@ private:
     Uint64 movable[8][8];
     vector<Movement> dMove;
     vector<string> signMove;
+    string Message;
 
     int numMove, numTurn;
     int promote;

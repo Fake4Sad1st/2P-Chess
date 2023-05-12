@@ -30,7 +30,7 @@ void OpenScreen::move(){
         if( e.type == SDL_MOUSEBUTTONDOWN ){
             int x = e.motion.x, y = e.motion.y;
             if( e.button.button == SDL_BUTTON_LEFT ){
-                if(x>=250 &&x<=250 + 404 && y>=250 && y<=250 + 125){quit = true; return;}
+                if(x>=250 &&x<=250 + 404 && y>=250 && y<=250 + 125){quit = true; SDL_Delay(100); return;}
             }
         }
         if( e.type == SDL_KEYDOWN ){

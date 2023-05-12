@@ -8,7 +8,12 @@ void Match::move(){
         if( e.type == SDL_KEYDOWN ){
             if( e.key.keysym.sym == SDLK_q ){quit = true; return;}
             if( e.key.keysym.sym == SDLK_r ){startNewMatch(); return;} //reset field
+            if( e.key.keysym.sym == SDLK_m ){Mix_VolumeMusic(40- Mix_VolumeMusic(-1)); return;}
             if( e.key.keysym.sym == SDLK_2 ){chessKind ^= 1; return;}
+            if( e.key.keysym.sym == SDLK_s ){
+                writeMatchReport();
+                return;
+            }
             if( e.key.keysym.sym == SDLK_ESCAPE ) promote = -1, holdPiece = false; //cancel move
         }
         if( e.type == SDL_MOUSEBUTTONDOWN ) {
@@ -90,9 +95,11 @@ void Match::saveMove(pa from, pa to, int promoteTo){
             board.setValue(xTo, 7, -1);
         }
     }
-    dMove.push_back(Movement(from, to, piece[xFrom][yFrom].getVal(),
-                             piece[xTo][yTo].getVal(), promoteTo, speCase));
-    drawAnimation_SFX(dMove.back());
+    Movement o(from, to, piece[xFrom][yFrom].getVal(),
+                piece[xTo][yTo].getVal(), promoteTo, speCase);
+    dMove.push_back(o);
+    saveMoveSign(o);
+    drawAnimation_SFX(o);
 }
 
 //go to a new move
@@ -106,8 +113,8 @@ void Match::add_numMove(){
         ++numTurn;
         cerr << "Turns no. " << numTurn << endl;
     }
-    if(currentSide == WHITE) cerr << "WHITE moves\n";
-    else cerr << "BLACK moves\n";
+    if(currentSide == WHITE) cerr << "WHITE moves: ";
+    else cerr << "BLACK moves: ";
 }
 
 
@@ -205,4 +212,51 @@ bool Match::check_tempBoard(bool Side){
         }
     }
     return false;
+}
+
+const string PieceSign = " BRNQK";
+void Match::saveMoveSign(const Movement& X){
+    string Sign;
+    string pF = signPos(X.from), pT = signPos(X.to);
+    int pK = X.pieceKind;
+
+    if(pK == PAWN){
+        if(X.pieceTaken != -1 || X.speCase == EN_PASSANT) Sign += pF[0], Sign += 'x';
+        Sign += pT;
+        if(X.speCase == PROMOTING) Sign += '=' , Sign += PieceSign[X.promoteTo];
+    }
+    else if(X.speCase == CASTLING){
+        if(X.to.se == 2) Sign = "O-O-O";
+        else Sign = "O-O";
+    }
+    else{
+        Sign = PieceSign[X.pieceKind];
+        //check if another piece of the same kind could move to that square
+        bool existed = 0, sameCol = 0, sameRow = 0;
+        FU(i, 0, 8) FU(j, 0, 8){
+            if(make_pair(i, j) == X.from) continue;
+            if(piece[i][j].getSide() == currentSide && piece[i][j].getVal() == X.pieceKind
+                && ONBIT(movable[i][j], realPos(X.to.fi, X.to.se))){
+                existed = 1;
+                if(i == X.from.fi) sameRow = 1;
+                if(j == X.from.se) sameCol = 1;
+            }
+        }
+        if(existed){
+            if(sameCol){
+                if(sameRow) Sign += pF;
+                else Sign += pF[1];
+            }
+            else Sign += pF[0];
+        }
+        if(X.pieceTaken != -1) Sign += 'x';
+        Sign += pT;
+    }
+
+    ///Calculate check here
+    inCheck = isThatCheck(currentSide ^ 1);
+    if(inCheck) Sign += '+';
+    signMove.push_back(Sign);
+
+    cerr << Sign <<'\n';
 }

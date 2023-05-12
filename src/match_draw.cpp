@@ -86,8 +86,6 @@ void Match::drawAnimation_SFX(const Movement& X){
     vector<Change> ani;
     bool playEffect = false;
 
-    ///Calculate check here
-    inCheck = isThatCheck(currentSide ^ 1);
     if(inCheck) checkSFX.play(), playEffect = true;
 
     if(X.speCase == PROMOTING){

@@ -66,14 +66,14 @@ void Match::finish(){
 
 void Match::startNewMatch(){
     reCalculate = holdPiece = false;
-    inCheck = endFlag = false;
+    inCheck = endFlag = saveMatch = false;
     currentSide = BLACK;
     numMove = numTurn = numDelayMove = 0;
     promote = -1;
     cur = make_pair(-1, -1);
     board.initValue();
     FU(i, 0, 8) FU(j, 0, 8) hasMoved[i][j] = false;
-    dMove.clear(); cb_Saver.clear();
+    dMove.clear(); cb_Saver.clear(); signMove.clear();
 
     add_numMove();
 }
