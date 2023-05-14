@@ -1,12 +1,12 @@
 #pragma once
 
-#include "texture.hpp"
+#include "button.hpp"
 
 //open screen image
-const std::string StartScreenLink = "img/background/start_screen.png";
+const string StartScreenLink = "img/background/start_screen.png";
 
 //song to play
-const std::string Theme1Link = "music/song/pigstep.mp3";
+const string Theme1Link = "music/song/pigstep.mp3";
 
 class OpenScreen{
 public:
@@ -17,9 +17,17 @@ public:
     void mainEvent();
     void move();
     void draw();
+    void checkClick(int x, int y);
+    void drawButton();
 
 private:
     Texture screen;
     Music theme;
-    bool quit;
+    Button start, setting, exit;
+    Box settingBox;
+    Button sfx0, audio0;
+    bool quit, state;
+
+
+    Button temp;
 };

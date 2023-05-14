@@ -24,6 +24,9 @@ void Match::draw(){
     FU(i, 0, 8) FU(j, 0, 8)
         if(promote == -1 || tempBoard[i][j] == -1) piece[i][j].draw(square[i][j]);
 
+    //important: draw buttons and blur screen
+    drawButton();
+
     //Update screen
     SDL_RenderPresent( Basic::instance().m_renderer );
     SDL_Delay(20);
@@ -46,6 +49,34 @@ void Match::drawDot(){
         canMoveTo[i][j] = 1;
         if(piece[i][j].getVal() == -1) dot1.draw(square[i][j]);
         else dot2.draw(square[i][j]);
+    }
+}
+
+void Match::drawButton(){
+    bool ok = state == NORMAL_SCR;
+    if(Mix_VolumeMusic(-1) != 0) audio.draw(ok);
+    else no_audio.draw(ok);
+    if(Mix_MasterVolume(-1) != 0) sfx.draw(ok);
+    else no_sfx.draw(ok);
+    setting.draw(ok);
+    change_pieces.draw(ok);
+    if(!endFlag){
+        if(numTurn < 3){
+            draw_button.draw(-1);
+            resign_button.draw(-1);
+        }
+        else{
+            draw_button.draw(ok);
+            resign_button.draw(ok);
+        }
+    }
+    else{
+        if(!saveMatch) matchSave_button.draw(ok);
+        else matchSaved_button.draw(SAVE_MATCH_RECT);
+    }
+    if(state == SETTING_SCR){
+        Basic::instance().blurScreen();
+        settingBox.draw();
     }
 }
 
@@ -124,6 +155,8 @@ void Match::drawAnimation_SFX(const Movement& X){
 }
 
 void Match::drawAnimationStep(int step, const vector<Change>& ani){
+    assert(state == NORMAL_SCR);
+
     //Clear screen
     SDL_RenderClear( Basic::instance().m_renderer );
 
@@ -153,6 +186,9 @@ void Match::drawAnimationStep(int step, const vector<Change>& ani){
         }
     }
 
+    //important: draw buttons and blur screen
+    drawButton();
+
     //Update screen
     SDL_RenderPresent( Basic::instance().m_renderer );
     SDL_Delay(8);
@@ -160,11 +196,5 @@ void Match::drawAnimationStep(int step, const vector<Change>& ani){
 
 //add color to a specific square
 void Match::addColorSquare(Uint32 val, pa X){
-    if(val == COLOR_MOVED) SDL_SetRenderDrawBlendMode(Basic::instance().m_renderer, SDL_BLENDMODE_BLEND);
-    else SDL_SetRenderDrawBlendMode(Basic::instance().m_renderer, SDL_BLENDMODE_NONE);
-    Uint8 a[4];
-    for(int i = 3; i >= 0; i--) a[i] = val & 255, val >>= 8;
-    SDL_SetRenderDrawColor(Basic::instance().m_renderer, a[0], a[1], a[2], a[3]);
-    SDL_RenderFillRect(Basic::instance().m_renderer, &square[X.fi][X.se]);
+    Basic::instance().addColor(val, square[X.fi][X.se], val == COLOR_MOVED);
 }
-

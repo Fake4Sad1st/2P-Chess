@@ -3,7 +3,7 @@
 Piece::Piece(){}
 Piece::~Piece(){}
 
-void Piece::setImage(const std::string& path){
+void Piece::setImage(const string& path){
     image = Texture(path);
 }
 

@@ -6,63 +6,96 @@ void Match::move(){
     while( SDL_PollEvent( &e ) != 0 ) {
         if( e.type == SDL_QUIT ){ Basic::instance().rageQuit(); return;}
         if( e.type == SDL_KEYDOWN ){
-            if( e.key.keysym.sym == SDLK_q ){quit = true; return;}
-            if( e.key.keysym.sym == SDLK_r ){startNewMatch(); return;} //reset field
-            if( e.key.keysym.sym == SDLK_m ){Mix_VolumeMusic(40- Mix_VolumeMusic(-1)); return;}
-            if( e.key.keysym.sym == SDLK_2 ){chessKind ^= 1; return;}
             if( e.key.keysym.sym == SDLK_s ){
                 writeMatchReport();
                 return;
             }
             if( e.key.keysym.sym == SDLK_ESCAPE ) promote = -1, holdPiece = false; //cancel move
         }
-        if( e.type == SDL_MOUSEBUTTONDOWN ) {
-            int y_board = (e.motion.x < XOFF ? -1 : (e.motion.x - XOFF) / 80);
-            int x_board = (e.motion.y < YOFF ? -1 : (e.motion.y - YOFF) / 80);
+        if( e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT ) {
+            int x = e.motion.x, y = e.motion.y;
+            bool pass = state == NORMAL_SCR;
+            checkButton(x, y);
+            if(!pass) return;
+            int y_board = (x < XOFF ? -1 : (x - XOFF) / 80);
+            int x_board = (y < YOFF ? -1 : (y - YOFF) / 80);
             if( !insideBoard(x_board, y_board) ) continue;
-            if( e.button.button == SDL_BUTTON_LEFT ){
-                if (holdPiece == true) {
-                    if (promote != -1){
-                        if(tempBoard[x_board][y_board] != -1){
-                            holdPiece = false;
-                            saveMove(cur, make_pair((currentSide == WHITE ? 0: 7), promote), tempBoard[x_board][y_board]);
-                            promote = -1;
-                            add_numMove();
-                        }
-                        else promote = -1, holdPiece = false;
-                        continue;
+            if (holdPiece == true) {
+                if (promote != -1){
+                    if(tempBoard[x_board][y_board] != -1){
+                        holdPiece = false;
+                        saveMove(cur, make_pair((currentSide == WHITE ? 0: 7), promote), tempBoard[x_board][y_board]);
+                        promote = -1;
+                        add_numMove();
                     }
-                    holdPiece = false;
-                    if(!canMoveTo[x_board][y_board]){
-                        if(cur != make_pair(x_board, y_board) && piece[x_board][y_board].isPiece())
-                            cur = make_pair(x_board, y_board), holdPiece = true;
-                        continue;
-                    }
-                    if(piece[cur.fi][cur.se].getVal() == PAWN && (x_board == 0 || x_board == 7)){
-                        holdPiece = true;
-                        create_promotionBoard(y_board);
-                        continue;
-                    }
-
-                    saveMove(cur, make_pair(x_board, y_board));
-                    add_numMove();
+                    else promote = -1, holdPiece = false;
+                    continue;
                 }
-                else {
-                    if (piece[x_board][y_board].isPiece()) {
-                        holdPiece = true;
-                        cur = make_pair(x_board, y_board);
-                    }
+                holdPiece = false;
+                if(!canMoveTo[x_board][y_board]){
+                    if(cur != make_pair(x_board, y_board) && piece[x_board][y_board].isPiece())
+                        cur = make_pair(x_board, y_board), holdPiece = true;
+                    continue;
+                }
+                if(piece[cur.fi][cur.se].getVal() == PAWN && (x_board == 0 || x_board == 7)){
+                    holdPiece = true;
+                    create_promotionBoard(y_board);
+                    continue;
+                }
+
+                saveMove(cur, make_pair(x_board, y_board));
+                add_numMove();
+            }
+            else {
+                if (piece[x_board][y_board].isPiece()) {
+                    holdPiece = true;
+                    cur = make_pair(x_board, y_board);
                 }
             }
 
-            //debug only
-            if( e.button.button == SDL_BUTTON_RIGHT ){
-                if(board.getValue(x_board, y_board) == -1) continue;
-                board.setValue(x_board, y_board, -1);
-                reCalculate = true;
-            }
+            ///debug only
+//            if( e.button.button == SDL_BUTTON_RIGHT ){
+//                if(board.getValue(x_board, y_board) == -1) continue;
+//                board.setValue(x_board, y_board, -1);
+//                reCalculate = true;
+//            }
         }
     }
+}
+
+void Match::checkButton(int x, int y){
+switch (state){
+    case NORMAL_SCR:{
+        if(Mix_VolumeMusic(-1) != 0){
+            if(audio.click(x, y)) Mix_VolumeMusic(0);
+        }
+        else if(no_audio.click(x, y)) Mix_VolumeMusic(DEFAULT_AUDIO_VOL);
+
+        if(Mix_MasterVolume(-1) != 0){
+            if(sfx.click(x, y)) Mix_MasterVolume(0);
+        }
+        else if(no_sfx.click(x, y)) Mix_MasterVolume(DEFAULT_SFX_VOL);
+        if(setting.click(x, y)) state = SETTING_SCR;
+        if(change_pieces.click(x, y)) chessKind ^= 1;
+
+        if(!endFlag){
+            if(numTurn >= 3){
+                if(draw_button.click(x, y)) outcome(DRAW_OFFER);
+                if(resign_button.click(x, y)) outcome(RESIGN);
+            }
+        }
+        else if(!saveMatch && matchSave_button.click(x, y)) SDL_Delay(250), writeMatchReport();
+
+    }
+    break;
+    case SETTING_SCR:{
+        int o = settingBox.click(x, y);
+        if(o == 0) state = NORMAL_SCR;
+        if(o == 1) {startNewMatch(); return;} //reset field
+        if(o == 2) {quit = true; return;}
+    }
+    break;
+}
 }
 
 //save the move you made to the board
@@ -113,8 +146,6 @@ void Match::add_numMove(){
         ++numTurn;
         cerr << "Turns no. " << numTurn << endl;
     }
-    if(currentSide == WHITE) cerr << "WHITE moves: ";
-    else cerr << "BLACK moves: ";
 }
 
 
@@ -258,5 +289,5 @@ void Match::saveMoveSign(const Movement& X){
     if(inCheck) Sign += '+';
     signMove.push_back(Sign);
 
-    cerr << Sign <<'\n';
+//    cerr << Sign <<'\n';
 }

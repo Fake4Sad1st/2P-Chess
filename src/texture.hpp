@@ -5,7 +5,8 @@
 class Texture {
 public:
     Texture();
-    Texture(const std::string& filename);
+    Texture(const string& filename);
+    Texture(TTF_Font* font, string text, Uint32 X);
     ~Texture();
 
     Texture& operator=(const Texture&) = delete;
@@ -24,6 +25,8 @@ public:
     void draw(SDL_Rect rect);
     void draw(int x, int y);
     void free();
+    int getW();
+    int getH();
 
 private:
     SDL_Texture* texture;

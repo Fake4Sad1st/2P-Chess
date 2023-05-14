@@ -55,7 +55,7 @@ class Piece{
 public:
     Piece();
     ~Piece();
-    void setImage(const std::string& path);
+    void setImage(const string& path);
     void setVal(bool chessKind, int _val);
     void eaten();
     void draw(SDL_Rect& rect);

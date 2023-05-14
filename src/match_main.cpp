@@ -20,7 +20,26 @@ Change::Change(pa pos, int _pieceIn):
 
 
 ///about Match class
-Match::Match(){
+Match::Match():
+    audio(SDL_Rect {950, 10, 50, 50}, "img/audio.png"),
+    no_audio(SDL_Rect {950, 10, 50, 50}, "img/no_audio.png"),
+    sfx(SDL_Rect {885, 10, 50, 50}, "img/sfx.png"),
+    no_sfx(SDL_Rect {885, 10, 50, 50}, "img/no_sfx.png"),
+    setting(SDL_Rect {820, 10, 50, 50}, "img/settings_icon.png"),
+    change_pieces(SDL_Rect {683, 80, 320, 80}, "img/change_pieces.png"),
+    draw_button(SDL_Rect {700, 590, 135, 50}, "img/draw_button.png"),
+    resign_button(SDL_Rect {855, 590, 135, 50}, "img/resign_button.png"),
+    matchSave_button(SAVE_MATCH_RECT, "img/matchSave_button.png"),
+
+    settingBox(SDL_Rect {256, 110, 500, 495}, "img/settings_box2.png"),
+
+    matchSaved_button("img/matchSaved_button.png")
+{
+    //box
+    settingBox.setRect(vector<SDL_Rect> {
+                        SDL_Rect {60, 90, 379, 110},
+                        SDL_Rect {60, 215, 379, 110},
+                        SDL_Rect {60, 340, 379, 110} });
     //texture
     dot1 = Texture(Dot1Link); dot1.setAlpha(0x78);
     dot2 = Texture(Dot2Link); dot2.setAlpha(0x78);
@@ -65,6 +84,9 @@ void Match::finish(){
 }
 
 void Match::startNewMatch(){
+    cerr << "START NEW MATCH...\n";
+
+    state = NORMAL_SCR;
     reCalculate = holdPiece = false;
     inCheck = endFlag = saveMatch = false;
     currentSide = BLACK;

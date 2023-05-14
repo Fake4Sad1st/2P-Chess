@@ -1,6 +1,5 @@
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <iomanip>
 
 #include "match.hpp"
 
@@ -147,6 +146,9 @@ void Match::outcome(short flag){
     switch(flag){
         case NO_POSSIBLE_MOVE:
             if(inCheck){
+                string &s = signMove.back();
+                assert(s[sz(s)-1] == '+');
+                s[sz(s)-1] = '#';
                 if(currentSide == WHITE){
                     Message = "Black";
                     WKingSym = Texture(CheckmateWhiteLink);
@@ -167,16 +169,16 @@ void Match::outcome(short flag){
             break;
         case RESIGN:
             if(currentSide == WHITE){
-                Message = "White";
-                WKingSym = Texture(WinnerLink);
-                BKingSym = Texture(ResignBlackLink);
-            }
-            else{
                 Message = "Black";
                 WKingSym = Texture(ResignWhiteLink);
                 BKingSym = Texture(WinnerLink);
             }
-            Message += " wins.\n Opponent resigns!\n";
+            else{
+                Message = "White";
+                WKingSym = Texture(WinnerLink);
+                BKingSym = Texture(ResignBlackLink);
+            }
+            Message += " wins. Opponent resigns!\n";
             break;
         case DRAW_OFFER:
             WKingSym = Texture(DrawWhiteLink);
@@ -211,7 +213,8 @@ bool Match::repetitionCheck(){
 }
 
 void Match::writeMatchReport(){
-    if (!endFlag || saveMatch){ cerr << "u can't\n"; return;}
+    assert(endFlag == true);
+    if(saveMatch) return;
 
     //create file name
     time_t t = time(0);   // get time now
@@ -224,6 +227,8 @@ void Match::writeMatchReport(){
     string filename = "match_report";
     mkdir(filename.c_str());
     filename += '/' + Date1 + '_' + Time1 + ".txt";
+    cerr << "Match report was saved in file: " << filename << endl;
+
     ofstream file;
     file.open(filename);
     file << "Match report is saved on " << Date2 << ", " << Time2 << ".\n\n";

@@ -4,14 +4,12 @@
 
 #include "texture.hpp"
 
-using namespace std;
-
 //Chessboard off the border size
 const int XOFF = 24;
 const int YOFF = 9;
 
 //Image link
-const std::string ChessboardLink = "img/background/chessboard.png";
+const string ChessboardLink = "img/background/chessboard.png";
 
 class Chessboard{
 public:

@@ -5,10 +5,10 @@ Music::Music(){
     music = NULL;
 }
 
-Music::Music(const std::string& filename){
+Music::Music(const string& filename){
     music = Mix_LoadMUS( filename.c_str() );
     if( music == NULL ){
-        std::cerr << "Failed to load music! SDL_mixer Error: " << Mix_GetError() << '\n';
+        cerr << "Failed to load music! SDL_mixer Error: " << Mix_GetError() << '\n';
         throw;
     }
 }
@@ -37,10 +37,10 @@ SFX::SFX(){
     chunk = NULL;
 }
 
-SFX::SFX(const std::string& filename){
+SFX::SFX(const string& filename){
     chunk = Mix_LoadWAV( filename.c_str() );
     if( chunk == NULL ){
-        std::cerr << "Failed to load chunk! SDL_mixer Error: " << Mix_GetError() << '\n';
+        cerr << "Failed to load chunk! SDL_mixer Error: " << Mix_GetError() << '\n';
         throw;
     }
 }
@@ -84,12 +84,25 @@ bool Basic::askQuit(){
     return quitGame;
 }
 
+void Basic::addColor(Uint32 val, SDL_Rect X, bool blend){
+    if(!blend) SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_NONE);
+    else SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_BLEND);
+    Uint8 a[4];
+    for(int i = 3; i >= 0; i--) a[i] = val & 255, val >>= 8;
+    SDL_SetRenderDrawColor(m_renderer, a[0], a[1], a[2], a[3]);
+    SDL_RenderFillRect(m_renderer, &X);
+}
+
+void Basic::blurScreen(){
+    addColor(0x00000080, SDL_Rect {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}, 1);
+}
+
 //Set icon for window
 void Basic::setIcon(){
     SDL_Surface* _icon = IMG_Load( ICON_LINK.c_str() );
     if( _icon == NULL )
     {
-        std::cerr << "Unable to load image " << ICON_LINK << "! SDL_image Error: " << IMG_GetError() << '\n';
+        cerr << "Unable to load image " << ICON_LINK << "! SDL_image Error: " << IMG_GetError() << '\n';
         throw;
     }
     SDL_SetWindowIcon(m_window, _icon);
@@ -99,19 +112,19 @@ void Basic::setIcon(){
 Basic::Basic(){
     //Initialize SDL
 	if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0 ){
-		std::cerr << "SDL could not initialize! SDL Error: " << SDL_GetError() << '\n';
+		cerr << "SDL could not initialize! SDL Error: " << SDL_GetError() << '\n';
 		throw;
 	}
 	else{
 		//Set texture filtering to linear
 		if( !SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "1" ) ){
-			std::cerr << "Warning: Linear texture filtering not enabled!\n";
+			cerr << "Warning: Linear texture filtering not enabled!\n";
 		}
 
 		//Create window
 		m_window = SDL_CreateWindow( EXE_NAME.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
 		if( m_window == NULL ){
-			std::cerr << "Window could not be created! SDL Error: " << SDL_GetError() << '\n';
+			cerr << "Window could not be created! SDL Error: " << SDL_GetError() << '\n';
 			throw;
 		}
 		//Set icon for program
@@ -120,30 +133,31 @@ Basic::Basic(){
         //Create renderer for window
         m_renderer = SDL_CreateRenderer( m_window, -1, SDL_RENDERER_ACCELERATED );
         if( m_renderer == NULL ){
-            std::cerr << "Renderer could not be created! SDL Error: " << SDL_GetError() << '\n';
+            cerr << "Renderer could not be created! SDL Error: " << SDL_GetError() << '\n';
             throw;
         }
 
         //Initialize renderer color
-        SDL_SetRenderDrawColor( m_renderer, 0xFF, 0xFF, 0xFF, 0xFF );
+        SDL_SetRenderDrawColor( m_renderer, 0x00, 0x00, 0x00, 0xFF );
 
         //Initialize PNG loading
         int imgFlags = IMG_INIT_PNG;
         if( !( IMG_Init( imgFlags ) & imgFlags ) ){
-            std::cerr << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError() << '\n';
+            cerr << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError() << '\n';
             throw;
         }
 
         //Initialize SDL_mixer
         if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0 ){
-            std::cerr << "SDL_mixer could not initialize! SDL_mixer Error: " << Mix_GetError() << '\n';
+            cerr << "SDL_mixer could not initialize! SDL_mixer Error: " << Mix_GetError() << '\n';
             throw;
         }
-        Mix_VolumeMusic(40);
+        Mix_VolumeMusic(DEFAULT_AUDIO_VOL);
+        Mix_MasterVolume(DEFAULT_SFX_VOL);
 
         //Initialize SDL_ttf
         if( TTF_Init() == -1 ){
-            std::cerr << "SDL_ttf could not initialize! SDL_ttf Error: " << TTF_GetError() << '\n';
+            cerr << "SDL_ttf could not initialize! SDL_ttf Error: " << TTF_GetError() << '\n';
             throw;
         }
 	}

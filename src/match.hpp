@@ -5,37 +5,34 @@
 
 #include "piece.hpp"
 #include "chessboard.hpp"
-
-#define pa pair<int, int>
-#define fi first
-#define se second
+#include "button.hpp"
 
 #define ONBIT(x, i) ((x) >> (i) & 1)
 #define UPBIT(x, i) ((x) |= (1ULL << (i)))
 
 //dot appeared when moving pieces
-const std::string Dot1Link = "img/dots/dot1.png";
-const std::string Dot2Link = "img/dots/dot2.png";
+const string Dot1Link = "img/dots/dot1.png";
+const string Dot2Link = "img/dots/dot2.png";
 
 //end symbol
-const std::string CheckmateBlackLink = "img/end_symbol/checkmate_black.png";
-const std::string CheckmateWhiteLink = "img/end_symbol/checkmate_white.png";
-const std::string DrawBlackLink = "img/end_symbol/draw_black.png";
-const std::string DrawWhiteLink = "img/end_symbol/draw_white.png";
-const std::string ResignBlackLink = "img/end_symbol/resign_black.png";
-const std::string ResignWhiteLink = "img/end_symbol/resign_white.png";
-const std::string WinnerLink = "img/end_symbol/winner.png";
+const string CheckmateBlackLink = "img/end_symbol/checkmate_black.png";
+const string CheckmateWhiteLink = "img/end_symbol/checkmate_white.png";
+const string DrawBlackLink = "img/end_symbol/draw_black.png";
+const string DrawWhiteLink = "img/end_symbol/draw_white.png";
+const string ResignBlackLink = "img/end_symbol/resign_black.png";
+const string ResignWhiteLink = "img/end_symbol/resign_white.png";
+const string WinnerLink = "img/end_symbol/winner.png";
 
 //song to play
-const std::string Theme2Link = "music/song/sweden.mp3";
+const string Theme2Link = "music/song/sweden.mp3";
 
 //SFXs
-const std::string CaptureSFXLink = "music/sfx/capture.wav";
-const std::string CastleSFXLink = "music/sfx/castle.wav";
-const std::string CheckSFXLink = "music/sfx/check.wav";
-const std::string GameOverSFXLink = "music/sfx/game_over.wav";
-const std::string MoveSFXLink = "music/sfx/move.wav";
-const std::string PromoteSFXLink = "music/sfx/promote.wav";
+const string CaptureSFXLink = "music/sfx/capture.wav";
+const string CastleSFXLink = "music/sfx/castle.wav";
+const string CheckSFXLink = "music/sfx/check.wav";
+const string GameOverSFXLink = "music/sfx/game_over.wav";
+const string MoveSFXLink = "music/sfx/move.wav";
+const string PromoteSFXLink = "music/sfx/promote.wav";
 
 //move in a chess board:
 // +) 0 -> 3: bishop
@@ -52,6 +49,9 @@ const short MAX_REPEAT_CHESSBOARD = 3;
 //color
 const Uint32 COLOR_MOVED = 0xF6F6699F;
 const Uint32 COLOR_PROMOTE = 0xFFFFFFFF;
+
+//some important rectangles
+const SDL_Rect SAVE_MATCH_RECT = {692, 535, 300, 110};
 
 //the cases happen when moving a piece
 enum MOVING_CASE{
@@ -101,6 +101,13 @@ enum ENDINGS{
     NUM_FLAGS,
 };
 
+//about the screens
+enum SCREENS{
+    NORMAL_SCR,
+    SETTING_SCR,
+
+};
+
 //store the match details
 class Match{
 public://support main
@@ -141,6 +148,7 @@ public:
 public:
     void draw();
     void drawPromotion();
+    void drawButton();
     void drawSquare();
     void drawDot();
     void drawEndgame();
@@ -150,6 +158,7 @@ public:
 ///move only
 public:
     void move();
+    void checkButton(int x, int y);
     void add_numMove();
     void saveMove(pa from, pa to, int promoteTo = -1);
     void saveMoveSign(const Movement& X);
@@ -179,6 +188,13 @@ private:
 private:
     Texture dot1, dot2, WKingSym, BKingSym;
     Music theme;
+    //button draw
+    Button audio, no_audio, sfx, no_sfx, setting;
+    Button change_pieces, draw_button, resign_button, matchSave_button;
+    Box settingBox;
+    Texture matchSaved_button;
+    int state;
+
     SFX captureSFX, castleSFX, checkSFX, game_overSFX, moveSFX, promoteSFX;
     SDL_Rect square[8][8], smSquare[8][8];
     Chessboard board;
