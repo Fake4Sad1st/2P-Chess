@@ -138,6 +138,7 @@ void Match::calculate(){
 //outcome of the match
 void Match::outcome(short flag){
     if(flag == POSSIBLE_MOVE) return;
+    cerr << "MATCH OVER!!!\n";
     game_overSFX.play();
     endFlag = true;
     //stop the possible move

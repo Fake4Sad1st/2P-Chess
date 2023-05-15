@@ -1,9 +1,6 @@
 #include "chessboard.hpp"
 
-Chessboard::Chessboard():
-    chessboard(ChessboardLink)
-{
-}
+Chessboard::Chessboard(): chessboard(ChessboardLink){}
 
 Chessboard::~Chessboard(){}
 
@@ -17,15 +14,6 @@ void Chessboard::initValue(){
         {-1, -1, -1, -1, -1, -1, -1, -1},
         {WPAWN, WPAWN, WPAWN, WPAWN, WPAWN, WPAWN, WPAWN, WPAWN},
         {WROOK, WKNIGHT, WBISHOP, WQUEEN, WKING, WBISHOP, WKNIGHT, WROOK}
-//        {-1, -1, -1, -1, -1, -1, -1, -1},
-//        {-1, -1, -1, -1, -1, -1, -1, -1},
-//        {-1, -1, -1, -1, -1, -1, -1, -1},
-//        {-1, -1, -1, -1, -1, -1, -1, -1},
-//        {-1, -1, -1, -1, -1, -1, -1, -1},
-//        {-1, -1, -1, -1, -1, -1, -1, -1},
-//        {-1, -1, -1, -1, -1, -1, -1, -1},
-//        {-1, -1, -1, -1, -1, -1, -1, -1},
-
     };
 }
 

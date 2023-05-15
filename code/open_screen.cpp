@@ -3,12 +3,12 @@
 OpenScreen::OpenScreen():
     screen(StartScreenLink),
     theme(Theme1Link),
-    start(SDL_Rect {291, 250, 430, 120}, "img/start.png"),
-    setting(SDL_Rect {291, 390, 430, 120}, "img/settings.png"),
-    exit(SDL_Rect {291, 530, 430, 120}, "img/exit.png"),
-    settingBox(SDL_Rect {256, 120, 500, 470}, "img/settings_box.png"),
-    sfx0(SDL_Rect {327, 199, 350, 120}, "img/sfx_button.png"),
-    audio0(SDL_Rect {327, 339, 350, 120}, "img/audio_button.png")
+    start(SDL_Rect {291, 250, 430, 120}, "source/img/icon/start.png"),
+    setting(SDL_Rect {291, 390, 430, 120}, "source/img/icon/settings.png"),
+    exit(SDL_Rect {291, 530, 430, 120}, "source/img/icon/exit.png"),
+    settingBox(SDL_Rect {256, 120, 500, 470}, "source/img/icon/settings_box.png"),
+    sfx0(SDL_Rect {327, 199, 350, 120}, "source/img/icon/sfx_button.png"),
+    audio0(SDL_Rect {327, 339, 350, 120}, "source/img/icon/audio_button.png")
 {
     vector<SDL_Rect> v = {SDL_Rect {70, 80, 350, 120},
                           SDL_Rect {70, 220, 350, 120},

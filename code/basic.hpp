@@ -26,7 +26,7 @@ const int SCREEN_HEIGHT = 675;
 const string EXE_NAME = "2 Player Chess";
 
 //Icon link
-const string ICON_LINK = "img/icon/2P_Chess.png";
+const string ICON_LINK = "source/img/icon/2P_Chess.png";
 
 //Volume
 const int DEFAULT_AUDIO_VOL = 40;

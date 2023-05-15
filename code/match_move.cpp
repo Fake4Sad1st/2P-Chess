@@ -142,11 +142,11 @@ void Match::saveMove(pa from, pa to, int promoteTo){
 
     short speCase = NOTHING;
     if(piece[xFrom][yFrom].getVal() == PAWN){
-         if( abs(yTo - yFrom) == 1 && !piece[xTo][yTo].isPiece()){ //En passant detected
+         if(abs(yTo - yFrom) == 1 && !piece[xTo][yTo].isPiece()){ //En passant detected
             speCase = EN_PASSANT;
             board.setValue(xFrom, yTo, -1);
          }
-         else if( xTo == 0 || xTo == 7 ) speCase = PROMOTING;
+         else if(xTo == 0 || xTo == 7) speCase = PROMOTING;
     }
     else if(piece[xFrom][yFrom].getVal() == KING && abs(yTo - yFrom) == 2){ //Castling detected
         speCase = CASTLING;
@@ -276,7 +276,7 @@ bool Match::check_tempBoard(bool Side){
     return false;
 }
 
-const string PieceSign = " BRNQK";
+const string PieceSign = " BRNQK BRNQK";
 void Match::saveMoveSign(const Movement& X){
     string Sign;
     string pF = signPos(X.from), pT = signPos(X.to);

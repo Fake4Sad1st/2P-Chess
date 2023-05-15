@@ -3,10 +3,10 @@
 #include "button.hpp"
 
 //open screen image
-const string StartScreenLink = "img/background/start_screen.png";
+const string StartScreenLink = "source/img/background/start_screen.png";
 
 //song to play
-const string Theme1Link = "music/song/pigstep.mp3";
+const string Theme1Link = "source/music/song/pigstep.mp3";
 
 class OpenScreen{
 public:

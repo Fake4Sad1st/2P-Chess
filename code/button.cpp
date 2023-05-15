@@ -33,7 +33,7 @@ void Button::draw(int effect){
 }
 
 void Button::addText(string text, int _sz, Uint32 Color, int distH){
-    TTF_Font* font = TTF_OpenFont("font/FreeSans.ttf", _sz);
+    TTF_Font* font = TTF_OpenFont("source/font/FreeSans.ttf", _sz);
     Text[sz(dis)] = Texture(font, text, Color);
     if(distH == -1) distH = (rect.h + Text[sz(dis)].getH()) / 2;
     dis.push_back(distH);

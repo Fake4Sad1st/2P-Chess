@@ -4,7 +4,7 @@
 
 #include "texture.hpp"
 
-const string ClickLink = "music/sfx/click.wav";
+const string ClickLink = "source/music/sfx/click.wav";
 
 class Button{
 public:

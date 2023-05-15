@@ -11,28 +11,28 @@
 #define UPBIT(x, i) ((x) |= (1ULL << (i)))
 
 //dot appeared when moving pieces
-const string Dot1Link = "img/dots/dot1.png";
-const string Dot2Link = "img/dots/dot2.png";
+const string Dot1Link = "source/img/dots/dot1.png";
+const string Dot2Link = "source/img/dots/dot2.png";
 
 //end symbol
-const string CheckmateBlackLink = "img/end_symbol/checkmate_black.png";
-const string CheckmateWhiteLink = "img/end_symbol/checkmate_white.png";
-const string DrawBlackLink = "img/end_symbol/draw_black.png";
-const string DrawWhiteLink = "img/end_symbol/draw_white.png";
-const string ResignBlackLink = "img/end_symbol/resign_black.png";
-const string ResignWhiteLink = "img/end_symbol/resign_white.png";
-const string WinnerLink = "img/end_symbol/winner.png";
+const string CheckmateBlackLink = "source/img/end_symbol/checkmate_black.png";
+const string CheckmateWhiteLink = "source/img/end_symbol/checkmate_white.png";
+const string DrawBlackLink = "source/img/end_symbol/draw_black.png";
+const string DrawWhiteLink = "source/img/end_symbol/draw_white.png";
+const string ResignBlackLink = "source/img/end_symbol/resign_black.png";
+const string ResignWhiteLink = "source/img/end_symbol/resign_white.png";
+const string WinnerLink = "source/img/end_symbol/winner.png";
 
 //song to play
-const string Theme2Link = "music/song/sweden.mp3";
+const string Theme2Link = "source/music/song/sweden.mp3";
 
 //SFXs
-const string CaptureSFXLink = "music/sfx/capture.wav";
-const string CastleSFXLink = "music/sfx/castle.wav";
-const string CheckSFXLink = "music/sfx/check.wav";
-const string GameOverSFXLink = "music/sfx/game_over.wav";
-const string MoveSFXLink = "music/sfx/move.wav";
-const string PromoteSFXLink = "music/sfx/promote.wav";
+const string CaptureSFXLink = "source/music/sfx/capture.wav";
+const string CastleSFXLink = "source/music/sfx/castle.wav";
+const string CheckSFXLink = "source/music/sfx/check.wav";
+const string GameOverSFXLink = "source/music/sfx/game_over.wav";
+const string MoveSFXLink = "source/music/sfx/move.wav";
+const string PromoteSFXLink = "source/music/sfx/promote.wav";
 
 //move in a chess board:
 // +) 0 -> 3: bishop
