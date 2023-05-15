@@ -21,16 +21,16 @@ This is my first game project, as well as the homework for the semester examinat
 
 * Step 2A: If you want to run the game directly without using any IDEs or compilers, copy/cut all files in `bin/Debug/` (include the `.dll` files) to the main folder, then run the execution named `2P_Chess.exe`.
 
-* Step 2B: If you have **Code::Blocks 17.12** or over (I haven't tried on other versions), you could extract `2P_Chess_CB.zip` *to another folder*, open the file `2P_Chess.cbp` inside **Code::Blocks** and click on Button "Compile and Run"/ press F9 to compile and run the codes.
+* Step 2B: If you have **Code::Blocks 17.12** or over (I haven't tried on other versions), you can extract `2P_Chess_CB.zip` *to another folder*, open the file `2P_Chess.cbp` inside **Code::Blocks** and click on Button "Compile and Run"/ press F9 to compile & run the codes.
 
 
 ## How to Play
 
 ### Basic
-The two players will interact with the game with mouse, click everything with your left mouse button :)) . In my opinion, the game is simple enough for everyone to play without the need of reading this.
+The two players will interact with the game by mouse, click everything with your left mouse button :)) . In my opinion, the game is simple enough for everyone to play without the need of reading this (of course, if they have known the chess rules before).
 
 ### Print match report
-This is my favorite feature of the game. After playing a match with your opponent, the game could export the match report to a text file (`.txt`). This is really useful when you want to rewatch the match and learn somrthing after a battle.
+This is my favorite feature of the game. After playing a match with your opponent, the game could export the match report to a text file (`.txt`). This is really useful when you want to rewatch the match and learn something after a battle.
 
 * Step 1: After a match, you should press the "Save Match Report" button like this:
 <p align="center">
@@ -42,7 +42,7 @@ This is my favorite feature of the game. After playing a match with your opponen
     <img src="source/img/demo/demo2.png">
 </p>
 
-* Step 3: Follow the link in the executable (which has the form of `/match_report/(Date_and_Time).txt`) and you will find the report.
+* Step 3: Follow the link in the executable (which has the form of `match_report/(Date_Time).txt`) and you will find the report.
 <p align="center">
     <img src="source/img/demo/demo3.png">
 </p>
