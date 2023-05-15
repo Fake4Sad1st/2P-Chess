@@ -64,38 +64,69 @@ void Match::move(){
 }
 
 void Match::checkButton(int x, int y){
-switch (state){
-    case NORMAL_SCR:{
-        if(Mix_VolumeMusic(-1) != 0){
-            if(audio.click(x, y)) Mix_VolumeMusic(0);
-        }
-        else if(no_audio.click(x, y)) Mix_VolumeMusic(DEFAULT_AUDIO_VOL);
+    switch (state){
+        case NORMAL_SCR:{
+            if(Mix_VolumeMusic(-1) != 0){
+                if(audio.click(x, y)) Mix_VolumeMusic(0);
+            }
+            else if(no_audio.click(x, y)) Mix_VolumeMusic(DEFAULT_AUDIO_VOL);
 
-        if(Mix_MasterVolume(-1) != 0){
-            if(sfx.click(x, y)) Mix_MasterVolume(0);
-        }
-        else if(no_sfx.click(x, y)) Mix_MasterVolume(DEFAULT_SFX_VOL);
-        if(setting.click(x, y)) state = SETTING_SCR;
-        if(change_pieces.click(x, y)) chessKind ^= 1;
+            if(Mix_MasterVolume(-1) != 0){
+                if(sfx.click(x, y)) Mix_MasterVolume(0);
+            }
+            else if(no_sfx.click(x, y)) Mix_MasterVolume(DEFAULT_SFX_VOL);
+            if(setting.click(x, y)) state = SETTING_SCR;
+            if(change_pieces.click(x, y)) chessKind ^= 1;
 
-        if(!endFlag){
-            if(numTurn >= 3){
-                if(draw_button.click(x, y)) outcome(DRAW_OFFER);
-                if(resign_button.click(x, y)) outcome(RESIGN);
+            if(!endFlag){
+                if(numTurn >= 3){
+                    if(draw_button.click(x, y)) state = DRAW_SCR;
+                    if(resign_button.click(x, y)) state = RESIGN_SCR;
+                }
+            }
+            else if(!saveMatch && matchSave_button.click(x, y)) SDL_Delay(250), writeMatchReport();
+
+        }
+        break;
+        case SETTING_SCR:{
+            int o = settingBox.click(x, y);
+            if(o == 0) state = NORMAL_SCR;
+            if(o == 1){
+                if(endFlag) startNewMatch(); //reset field
+                else state = REPLAY_SCR;
+            }
+            if(o == 2){
+                if(endFlag) quit = true;
+                else state = QUIT_SCR;
             }
         }
-        else if(!saveMatch && matchSave_button.click(x, y)) SDL_Delay(250), writeMatchReport();
-
+        break;
+        case REPLAY_SCR:{
+            int o = replay_prompt.click(x, y);
+            if(o == 0) startNewMatch(), state = NORMAL_SCR;
+            if(o == 1) state = SETTING_SCR;
+        }
+        break;
+        case QUIT_SCR:{
+            int o = quit_prompt.click(x, y);
+            if(o == 0) quit = true;
+            if(o != -1) state = SETTING_SCR;
+        }
+        break;
+        case DRAW_SCR:{
+            int o = draw_prompt.click(x, y);
+            if(o == 0) outcome(DRAW_OFFER);
+            if(o != -1) state = NORMAL_SCR;
+        }
+        break;
+        case RESIGN_SCR:{
+            int o = (currentSide == WHITE ? resignWhite_prompt.click(x, y) :
+                                            resignBlack_prompt.click(x, y));
+            if(o == 0) outcome(RESIGN);
+            if(o != -1) state = NORMAL_SCR;
+        }
+        break;
     }
-    break;
-    case SETTING_SCR:{
-        int o = settingBox.click(x, y);
-        if(o == 0) state = NORMAL_SCR;
-        if(o == 1) {startNewMatch(); return;} //reset field
-        if(o == 2) {quit = true; return;}
-    }
-    break;
-}
 }
 
 //save the move you made to the board

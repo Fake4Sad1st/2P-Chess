@@ -24,6 +24,7 @@ void Match::draw(){
     FU(i, 0, 8) FU(j, 0, 8)
         if(promote == -1 || tempBoard[i][j] == -1) piece[i][j].draw(square[i][j]);
 
+    drawText();
     //important: draw buttons and blur screen
     drawButton();
 
@@ -52,6 +53,17 @@ void Match::drawDot(){
     }
 }
 
+void Match::drawText(){
+    Texture o;
+    if(endFlag) o = Texture(font, "Match over !!!", COLOR_TEXT_6);
+    else{
+        string S = "Turn no. "; S += convert(numTurn, -1);
+        o = Texture(font, S, COLOR_TEXT_6);
+    }
+    SDL_Rect R = STATUS_RECT;
+    o.draw(R.x + (R.w - o.getW()) /2, R.y + (R.h - o.getH()) /2);
+}
+
 void Match::drawButton(){
     bool ok = state == NORMAL_SCR;
     if(Mix_VolumeMusic(-1) != 0) audio.draw(ok);
@@ -60,6 +72,9 @@ void Match::drawButton(){
     else no_sfx.draw(ok);
     setting.draw(ok);
     change_pieces.draw(ok);
+
+    if(currentSide == BLACK) circleOn.draw(STATUS_RECT.x + 20, STATUS_RECT.y + 15);
+    else circleOn.draw(STATUS_RECT.x + 20, STATUS_RECT.y + 255);
     if(!endFlag){
         if(numTurn < 3){
             draw_button.draw(-1);
@@ -74,9 +89,25 @@ void Match::drawButton(){
         if(!saveMatch) matchSave_button.draw(ok);
         else matchSaved_button.draw(SAVE_MATCH_RECT);
     }
+
     if(state == SETTING_SCR){
         Basic::instance().blurScreen();
         settingBox.draw();
+    }
+    if(state == REPLAY_SCR || state == QUIT_SCR){
+        settingBox.draw(0);
+        Basic::instance().blurScreen();
+        if(state == REPLAY_SCR) replay_prompt.draw();
+        else quit_prompt.draw();
+    }
+    if(state == DRAW_SCR){
+        Basic::instance().blurScreen();
+        draw_prompt.draw();
+    }
+    if(state == RESIGN_SCR){
+        Basic::instance().blurScreen();
+        if(currentSide == WHITE) resignWhite_prompt.draw();
+        else resignBlack_prompt.draw();
     }
 }
 
@@ -186,6 +217,7 @@ void Match::drawAnimationStep(int step, const vector<Change>& ani){
         }
     }
 
+    drawText();
     //important: draw buttons and blur screen
     drawButton();
 

@@ -9,13 +9,7 @@ Button::Button(SDL_Rect _rect, string path, string text):
 {
     rect = _rect;
     image = Texture(path);
-    if(sz(text)){
-        TTF_Font* font = NULL;
-        font = TTF_OpenFont("font/FreeSans.ttf", 20);
-        //421CEF
-        Text[0] = Texture(font, text, 0x6666FF);
-        dis.push_back((rect.h - Text[0].getH())/2);
-    }
+    if(sz(text)) addText(text, 30, 0x000000);
 }
 
 Button::~Button(){
@@ -31,16 +25,18 @@ void Button::free(){
 void Button::draw(int effect){
     image.draw(rect);
     FU(i, 0, sz(dis)){
-        Text[i].draw(rect.x + (rect.w - Text[i].getW())/2, rect.y + dis[i]);
+        int h = rect.x + (rect.w - Text[i].getW())/2;
+        Text[i].draw(h, rect.y + dis[i]);
     }
     if(effect == 1) glow();
     else if(effect == -1) Basic::instance().addColor(0x00000070, rect, 1);
 }
 
-void Button::addText(string text, int _sz, int a){
+void Button::addText(string text, int _sz, Uint32 Color, int distH){
     TTF_Font* font = TTF_OpenFont("font/FreeSans.ttf", _sz);
-    Text[sz(dis)] = Texture(font, text, 0x6666FF);
-    dis.push_back(a);
+    Text[sz(dis)] = Texture(font, text, Color);
+    if(distH == -1) distH = (rect.h + Text[sz(dis)].getH()) / 2;
+    dis.push_back(distH);
 }
 
 void Button::glow(){
@@ -89,7 +85,6 @@ void Box::glow(){
         SDL_Rect o = vRect[i];
         o.x += rect.x, o.y += rect.y;
         Basic::instance().addColor(0xFFFFFF20, o, 1);
-//        Basic::instance().addColor(0xFFFFFFFF, o);
         return;
     }
 }

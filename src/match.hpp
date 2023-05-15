@@ -49,9 +49,12 @@ const short MAX_REPEAT_CHESSBOARD = 3;
 //color
 const Uint32 COLOR_MOVED = 0xF6F6699F;
 const Uint32 COLOR_PROMOTE = 0xFFFFFFFF;
+const Uint32 COLOR_TEXT_6 = 0xDFDB62;
 
 //some important rectangles
 const SDL_Rect SAVE_MATCH_RECT = {692, 535, 300, 110};
+const SDL_Rect PROMPT_RECT = {306, 210, 400, 250};
+const SDL_Rect STATUS_RECT = {673, 170, 340, 320};
 
 //the cases happen when moving a piece
 enum MOVING_CASE{
@@ -105,7 +108,10 @@ enum ENDINGS{
 enum SCREENS{
     NORMAL_SCR,
     SETTING_SCR,
-
+    REPLAY_SCR,
+    QUIT_SCR,
+    DRAW_SCR,
+    RESIGN_SCR,
 };
 
 //store the match details
@@ -148,9 +154,10 @@ public:
 public:
     void draw();
     void drawPromotion();
-    void drawButton();
     void drawSquare();
     void drawDot();
+    void drawText();
+    void drawButton();
     void drawEndgame();
     void drawAnimation_SFX(const Movement& X);
     void drawAnimationStep(int step, const vector<Change>& ani);
@@ -191,8 +198,10 @@ private:
     //button draw
     Button audio, no_audio, sfx, no_sfx, setting;
     Button change_pieces, draw_button, resign_button, matchSave_button;
-    Box settingBox;
-    Texture matchSaved_button;
+    Box settingBox, replay_prompt, quit_prompt;
+    Box draw_prompt, resignBlack_prompt, resignWhite_prompt;
+    Texture matchSaved_button, circleOn;
+    TTF_Font* font;
     int state;
 
     SFX captureSFX, castleSFX, checkSFX, game_overSFX, moveSFX, promoteSFX;

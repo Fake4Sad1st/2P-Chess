@@ -17,7 +17,7 @@ public:
     void mainEvent();
     void move();
     void draw();
-    void checkClick(int x, int y);
+    void checkButton(int x, int y);
     void drawButton();
 
 private:
@@ -27,7 +27,4 @@ private:
     Box settingBox;
     Button sfx0, audio0;
     bool quit, state;
-
-
-    Button temp;
 };

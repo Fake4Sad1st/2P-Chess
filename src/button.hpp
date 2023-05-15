@@ -19,7 +19,7 @@ public:
     ~Button();
 
     void draw(int drawGlow = 1);
-    void addText(string text, int _sz, int a);
+    void addText(string text, int _sz, Uint32 Color, int distH = -1);
     void glow();
     void free();
     bool click(int x, int y);
